@@ -32,15 +32,6 @@
 *::before,
 *::after {
   box-sizing: border-box;
-  margin: 0;
-  padding: 0;
-}
-
-/* Global Zero-Bleed Form Protection */
-input, select, textarea, button {
-  box-sizing: border-box !important;
-  max-width: 100% !important;
-  min-width: 0 !important;
 }
 
 html {
@@ -76,30 +67,14 @@ body {
   box-sizing: border-box;
 }
 
-/* Universal Section Spacing — Balanced vertical rhythm without excessive empty gaps */
+/* Universal Section Spacing */
 .site-section {
   width: 100%;
-  padding-top: clamp(3rem, 5vw, 4.5rem);
-  padding-bottom: clamp(3rem, 5vw, 4.5rem);
+  padding-top: clamp(4rem, 7vw, 6.5rem);
+  padding-bottom: clamp(4rem, 7vw, 6.5rem);
   position: relative;
   overflow: hidden;
   box-sizing: border-box;
-}
-
-/* Bulletproof Zero-Bleed Form and Container Protection */
-.zero-bleed-container {
-  width: 100% !important;
-  box-sizing: border-box !important;
-}
-
-.zero-bleed-container input,
-.zero-bleed-container select,
-.zero-bleed-container textarea {
-  width: 100% !important;
-  max-width: 100% !important;
-  min-width: 0 !important;
-  box-sizing: border-box !important;
-  display: block;
 }
 
 /* Perfectly Centered Section Header */
@@ -410,6 +385,24 @@ body {
 
 /* Scrollbars */
 ::-webkit-scrollbar {
+  width: 5px;
+  height: 5px;
+}
+
+::-webkit-scrollbar-track {
+  background: #FAF7F2;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #C5A880;
+  border-radius: 9999px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #8C7355;
+}
+
+:-webkit-scrollbar {
   width: 5px;
   height: 5px;
 }

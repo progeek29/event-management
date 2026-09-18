@@ -2,21 +2,6 @@ import React from 'react';
 import { Heart, Phone, MessageSquare } from 'lucide-react';
 import { BRAND_INFO } from '../data/initialData';
 
-const FOUNDER_DETAILS = [
-  {
-    initials: 'VP',
-    speciality: 'Mandap Scenography & Royal Decor'
-  },
-  {
-    initials: 'AV',
-    speciality: 'Awadhi Banquets & 5-Star Feasts'
-  },
-  {
-    initials: 'CP',
-    speciality: 'Vedic Muhurat & Guest Concierge'
-  }
-];
-
 export default function PhilosophySection() {
   return (
     <section id="philosophy" className="site-section bg-[#F4EFEA] border-t border-[#8C7355]/20">
@@ -24,78 +9,62 @@ export default function PhilosophySection() {
       <div className="site-container text-center">
 
         {/* Sacred Heart Monogram */}
-        <div className="inline-flex items-center justify-center w-11 h-11 rounded-full bg-white border border-[#8C7355]/30 mb-4 shadow-2xs mx-auto">
+        <div className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-white border border-[#8C7355]/30 mb-6 shadow-2xs mx-auto">
           <Heart className="w-5 h-5 text-[#8C7355] fill-[#8C7355]/20" />
         </div>
 
-        <span className="text-[10px] uppercase tracking-[0.28em] text-[#8C7355] font-semibold block mb-2">
+        <span className="text-[10px] uppercase tracking-[0.3em] text-[#8C7355] font-semibold block mb-3">
           Our Guiding Conviction
         </span>
 
         {/* Display Statement */}
-        <h2 className="font-display text-2xl sm:text-4xl lg:text-5xl text-[#1C1A18] font-normal tracking-tight leading-[1.2] mb-4 max-w-3xl mx-auto">
+        <h2 className="font-display text-2xl sm:text-4xl lg:text-5xl text-[#1C1A18] font-normal tracking-tight leading-[1.2] mb-6 max-w-3xl mx-auto">
           "A wedding is not an event to be managed. <br />
           <span className="font-serif italic font-light text-[#8C7355]">It is a sacred covenant to be revered."</span>
         </h2>
 
-        <div className="section-divider mb-4" />
+        <div className="section-divider mb-6" />
 
-        <p className="section-desc mb-8 max-w-2xl mx-auto text-sm sm:text-base text-[#706860]">
+        <p className="section-desc mb-12">
           We shoulder every logistical, architectural, and hospitality detail so you and your family can immerse completely in the sacred rituals.
         </p>
 
-        {/* 3 Spacious, Prestigious Founder Concierge Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-5xl mx-auto text-left">
+        {/* 3 Symmetrical Founder Stewardship Cards */}
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 max-w-4xl mx-auto">
           {BRAND_INFO.contacts.map((director, idx) => (
             <div
               key={idx}
-              className="p-6 sm:p-7 rounded-2xl bg-white border border-[#8C7355]/25 shadow-xs hover:shadow-xl hover:border-[#8C7355] transition-all duration-300 flex flex-col justify-between group"
+              className="p-5 sm:p-6 rounded-2xl bg-white border border-[#8C7355]/25 shadow-sm hover:shadow-md transition-all duration-300 flex flex-col items-center justify-between text-center box-border"
             >
-              <div>
-                {/* Monogram Badge + Role */}
-                <div className="flex items-center justify-between mb-4">
-                  <div className="w-10 h-10 rounded-full border border-[#8C7355]/40 flex items-center justify-center font-serif text-sm font-medium text-[#8C7355] bg-[#FAF7F2] group-hover:bg-[#8C7355] group-hover:text-white transition-colors">
-                    {FOUNDER_DETAILS[idx]?.initials || 'SR'}
-                  </div>
-                  <span className="text-[9px] uppercase tracking-[0.22em] text-[#8C7355] font-semibold px-2.5 py-1 rounded-full bg-[#FAF7F2] border border-[#8C7355]/20">
-                    Direct Founder
-                  </span>
-                </div>
-
-                <span className="text-[10px] uppercase tracking-[0.2em] text-[#706860] font-medium block mb-1">
-                  {director.role}
-                </span>
-
-                <h4 className="font-serif text-2xl text-[#1C1A18] font-normal mb-1.5 group-hover:text-[#8C7355] transition-colors">
+              <div className="w-full max-w-full flex flex-col items-center">
+                {/* 1. Name: responsive font, wraps to second line, zero overflow */}
+                <h4 className="font-serif text-lg sm:text-xl text-[#1C1A18] font-medium leading-snug break-words max-w-full mb-3.5">
                   {director.name}
                 </h4>
 
-                <p className="text-xs text-[#8C7355] font-medium mb-6">
-                  {FOUNDER_DETAILS[idx]?.speciality}
-                </p>
-              </div>
+                {/* 2. Title/Role: 12-16px vertical gap */}
+                <span className="text-[10px] uppercase tracking-[0.22em] text-[#8C7355] font-semibold block max-w-full break-words mb-3.5">
+                  {director.role}
+                </span>
 
-              {/* Action Buttons: Call & WhatsApp */}
-              <div className="pt-4 border-t border-[#8C7355]/15 space-y-2.5">
+                {/* 3. Phone: 12-16px vertical gap */}
                 <a
                   href={`tel:${director.phone}`}
-                  className="w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl border border-[#8C7355]/20 bg-[#FAF7F2] text-xs text-[#1C1A18] hover:bg-[#8C7355] hover:text-white hover:border-[#8C7355] transition-all font-medium"
+                  className="inline-flex items-center justify-center gap-1.5 text-xs text-[#5C554E] hover:text-[#1C1A18] transition-colors mb-3.5"
                 >
-                  <span className="flex items-center gap-2">
-                    <Phone className="w-3.5 h-3.5 text-[#8C7355] group-hover:text-white" />
-                    <span>Call Direct</span>
-                  </span>
-                  <span className="font-mono text-[11px] opacity-90">{director.phoneDisplay}</span>
+                  <Phone className="w-3.5 h-3.5 text-[#8C7355]" />
+                  <span>{director.phoneDisplay}</span>
                 </a>
 
+                {/* 4. WhatsApp link: 12-16px vertical gap */}
                 <a
-                  href={`https://wa.me/${director.whatsapp}?text=Hello%20${encodeURIComponent(director.name)},%20I%20am%20inquiring%20about%20our%20upcoming%20wedding%20celebration.`}
+                  href={`https://wa.me/${director.whatsapp}?text=Hello%20${encodeURIComponent(director.name)},%20I%20am%20inquiring%20about%20a%20wedding.`}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="w-full flex items-center justify-center gap-2 px-3.5 py-2.5 rounded-xl bg-[#1C1A18] text-[#FAF7F2] hover:bg-[#8C7355] text-xs font-medium tracking-wider transition-all shadow-xs"
+                  className="inline-flex items-center justify-center gap-1.5 text-xs font-medium text-[#8C7355] hover:text-[#1C1A18] transition-colors"
                 >
-                  <MessageSquare className="w-3.5 h-3.5 text-[#C5A880]" />
-                  <span>Chat on WhatsApp</span>
+                  <MessageSquare className="w-3.5 h-3.5 text-[#8C7355]" />
+                  <span>WhatsApp Direct</span>
                 </a>
               </div>
             </div>

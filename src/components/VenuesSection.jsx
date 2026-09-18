@@ -97,11 +97,6 @@ export default function VenuesSection({ onNavigateToReservation, onOpenServicePa
                 <div className="card-body">
                   <span className="card-tag">{venue.subtitle}</span>
                   <h3 className="card-title">{venue.title}</h3>
-                  {venue.titleHi && (
-                    <p className="text-xs text-[#8C7355] font-medium mb-2">
-                      {venue.titleHi}
-                    </p>
-                  )}
                   <p className="card-text">{venue.desc}</p>
                 </div>
               </div>
