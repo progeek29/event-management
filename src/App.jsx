@@ -202,6 +202,7 @@ export default function App() {
           {/* Minimalist Masthead Footer */}
           <Footer
             onOpenAdmin={() => setIsAdminOpen(true)}
+            onNavigateToReservation={navigateToReservation}
           />
         </>
       )}

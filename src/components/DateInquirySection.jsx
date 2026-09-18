@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Calendar, MessageSquare, ArrowRight, ShieldCheck, Sparkles } from 'lucide-react';
+import { Calendar, MessageSquare, ArrowRight, ShieldCheck, Sparkles, Phone } from 'lucide-react';
 import { BRAND_INFO } from '../data/initialData';
 
 export default function DateInquirySection({ onNavigateToReservation, onLeadCreated }) {
@@ -45,11 +45,11 @@ export default function DateInquirySection({ onNavigateToReservation, onLeadCrea
 
       <div className="site-container">
 
-        {/* Strictly Centered Form Container */}
-        <div className="bg-white rounded-3xl p-6 sm:p-10 lg:p-12 border border-[#8C7355]/25 shadow-xl max-w-2xl mx-auto text-left relative overflow-hidden">
+        {/* Strictly Contained Form Card — Zero Overflow Guaranteed */}
+        <div className="w-full max-w-2xl mx-auto bg-white rounded-3xl p-6 sm:p-10 lg:p-12 border border-[#8C7355]/25 shadow-xl text-left relative overflow-hidden box-border zero-bleed-container">
 
           {/* Centered Form Header */}
-          <div className="section-header-centered mb-8">
+          <div className="section-header-centered mb-7">
             <div className="section-tag border-[#8C7355]/30 bg-[#FAF7F2] text-[#706860]">
               <span className="text-[#8C7355] text-xs">❖</span>
               <span>Private Consultation</span>
@@ -86,10 +86,10 @@ export default function DateInquirySection({ onNavigateToReservation, onLeadCrea
               </button>
             </div>
           ) : (
-            <form onSubmit={handleSubmit} className="space-y-4">
+            <form onSubmit={handleSubmit} className="w-full max-w-full space-y-4 box-border">
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 w-full min-w-0 box-border">
+                <div className="flex flex-col w-full min-w-0 box-border">
                   <label className="block text-[10px] uppercase tracking-[0.22em] text-[#706860] font-semibold mb-1.5">
                     Couple / Patron Name *
                   </label>
@@ -99,11 +99,11 @@ export default function DateInquirySection({ onNavigateToReservation, onLeadCrea
                     placeholder="e.g. Aditi & Siddharth"
                     value={form.name}
                     onChange={(e) => setForm({ ...form, name: e.target.value })}
-                    className="w-full px-4 py-3 rounded-xl border border-[#8C7355]/25 bg-[#FAF7F2] text-sm text-[#1C1A18] focus:outline-none focus:border-[#8C7355] transition-colors"
+                    className="w-full max-w-full min-w-0 block box-border px-4 py-3 rounded-xl border border-[#8C7355]/25 bg-[#FAF7F2] text-sm text-[#1C1A18] focus:outline-none focus:border-[#8C7355] transition-colors"
                   />
                 </div>
 
-                <div>
+                <div className="flex flex-col w-full min-w-0 box-border">
                   <label className="block text-[10px] uppercase tracking-[0.22em] text-[#706860] font-semibold mb-1.5">
                     Phone Number *
                   </label>
@@ -113,13 +113,13 @@ export default function DateInquirySection({ onNavigateToReservation, onLeadCrea
                     placeholder="+91 98261 XXXXX"
                     value={form.phone}
                     onChange={(e) => setForm({ ...form, phone: e.target.value })}
-                    className="w-full px-4 py-3 rounded-xl border border-[#8C7355]/25 bg-[#FAF7F2] text-sm text-[#1C1A18] focus:outline-none focus:border-[#8C7355] transition-colors"
+                    className="w-full max-w-full min-w-0 block box-border px-4 py-3 rounded-xl border border-[#8C7355]/25 bg-[#FAF7F2] text-sm text-[#1C1A18] focus:outline-none focus:border-[#8C7355] transition-colors"
                   />
                 </div>
               </div>
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 w-full min-w-0 box-border">
+                <div className="flex flex-col w-full min-w-0 box-border">
                   <label className="block text-[10px] uppercase tracking-[0.22em] text-[#706860] font-semibold mb-1.5">
                     Celebration Date
                   </label>
@@ -127,18 +127,18 @@ export default function DateInquirySection({ onNavigateToReservation, onLeadCrea
                     type="date"
                     value={form.date}
                     onChange={(e) => setForm({ ...form, date: e.target.value })}
-                    className="w-full px-4 py-3 rounded-xl border border-[#8C7355]/25 bg-[#FAF7F2] text-sm text-[#1C1A18] focus:outline-none focus:border-[#8C7355] transition-colors"
+                    className="w-full max-w-full min-w-0 block box-border px-4 py-3 rounded-xl border border-[#8C7355]/25 bg-[#FAF7F2] text-sm text-[#1C1A18] focus:outline-none focus:border-[#8C7355] transition-colors"
                   />
                 </div>
 
-                <div>
+                <div className="flex flex-col w-full min-w-0 box-border">
                   <label className="block text-[10px] uppercase tracking-[0.22em] text-[#706860] font-semibold mb-1.5">
                     Celebration Type
                   </label>
                   <select
                     value={form.occasion}
                     onChange={(e) => setForm({ ...form, occasion: e.target.value })}
-                    className="w-full px-4 py-3 rounded-xl border border-[#8C7355]/25 bg-[#FAF7F2] text-sm text-[#1C1A18] focus:outline-none focus:border-[#8C7355] transition-colors"
+                    className="w-full max-w-full min-w-0 block box-border px-4 py-3 rounded-xl border border-[#8C7355]/25 bg-[#FAF7F2] text-sm text-[#1C1A18] focus:outline-none focus:border-[#8C7355] transition-colors cursor-pointer"
                   >
                     <option>Destination Wedding & Mandap</option>
                     <option>Engagement & Sangeet Gala</option>
@@ -149,7 +149,7 @@ export default function DateInquirySection({ onNavigateToReservation, onLeadCrea
                 </div>
               </div>
 
-              <div>
+              <div className="w-full min-w-0 box-border flex flex-col">
                 <label className="block text-[10px] uppercase tracking-[0.22em] text-[#706860] font-semibold mb-1.5">
                   Estimated Guests & Special Desires (Optional)
                 </label>
@@ -158,12 +158,12 @@ export default function DateInquirySection({ onNavigateToReservation, onLeadCrea
                   placeholder="Estimated guest count, preferred venue or culinary desires..."
                   value={form.notes}
                   onChange={(e) => setForm({ ...form, notes: e.target.value })}
-                  className="w-full px-4 py-2.5 rounded-xl border border-[#8C7355]/25 bg-[#FAF7F2] text-sm text-[#1C1A18] focus:outline-none focus:border-[#8C7355] transition-colors resize-none"
+                  className="w-full max-w-full min-w-0 block box-border px-4 py-2.5 rounded-xl border border-[#8C7355]/25 bg-[#FAF7F2] text-sm text-[#1C1A18] focus:outline-none focus:border-[#8C7355] transition-colors resize-none"
                 />
               </div>
 
-              {/* Action Buttons */}
-              <div className="pt-3 flex flex-col sm:flex-row items-center justify-center gap-3">
+              {/* Action Buttons: Check Date + WhatsApp + Call */}
+              <div className="pt-3 flex flex-col sm:flex-row items-center justify-center gap-3 w-full box-border">
                 <button
                   type="submit"
                   className="btn-pill-dark w-full sm:w-auto cursor-pointer inline-flex items-center justify-center gap-2"
@@ -181,6 +181,15 @@ export default function DateInquirySection({ onNavigateToReservation, onLeadCrea
                   <MessageSquare className="w-3.5 h-3.5 text-[#8C7355]" />
                   <span>DM on WhatsApp</span>
                 </button>
+
+                <a
+                  href={`tel:${BRAND_INFO.contacts[0].phone}`}
+                  className="btn-pill-outline w-full sm:w-auto bg-[#FAF7F2] inline-flex items-center justify-center gap-2"
+                  title="Direct Call to Founder"
+                >
+                  <Phone className="w-3.5 h-3.5 text-[#8C7355]" />
+                  <span>Call Us</span>
+                </a>
               </div>
 
               {onNavigateToReservation && (

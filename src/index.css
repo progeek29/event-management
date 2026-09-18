@@ -36,6 +36,13 @@
   padding: 0;
 }
 
+/* Global Zero-Bleed Form Protection */
+input, select, textarea, button {
+  box-sizing: border-box !important;
+  max-width: 100% !important;
+  min-width: 0 !important;
+}
+
 html {
   scroll-behavior: smooth;
   font-size: 16px;
@@ -69,14 +76,30 @@ body {
   box-sizing: border-box;
 }
 
-/* Universal Section Spacing */
+/* Universal Section Spacing — Balanced vertical rhythm without excessive empty gaps */
 .site-section {
   width: 100%;
-  padding-top: clamp(4rem, 7vw, 6.5rem);
-  padding-bottom: clamp(4rem, 7vw, 6.5rem);
+  padding-top: clamp(3rem, 5vw, 4.5rem);
+  padding-bottom: clamp(3rem, 5vw, 4.5rem);
   position: relative;
   overflow: hidden;
   box-sizing: border-box;
+}
+
+/* Bulletproof Zero-Bleed Form and Container Protection */
+.zero-bleed-container {
+  width: 100% !important;
+  box-sizing: border-box !important;
+}
+
+.zero-bleed-container input,
+.zero-bleed-container select,
+.zero-bleed-container textarea {
+  width: 100% !important;
+  max-width: 100% !important;
+  min-width: 0 !important;
+  box-sizing: border-box !important;
+  display: block;
 }
 
 /* Perfectly Centered Section Header */
