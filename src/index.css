@@ -1,0 +1,405 @@
+@import "tailwindcss";
+
+/* ==========================================================================
+   SHREE RAM EVENTS — PRINCIPAL-ENGINEERED LUXURY SYSTEM
+   Rules:
+   1. Universal 1200px centered containers (.site-container)
+   2. Symmetric padding & margins (No left-drifting, perfectly centered)
+   3. Uniform card heights & aspect ratios (Zero arrow or text overflow)
+   4. Minimal words — concise, poetic, high-impact
+   5. Serene, calming, warm neutral palette
+   ========================================================================== */
+
+:root {
+  --bg-sand: #FAF7F2;
+  --bg-linen: #F4EFEA;
+  --bg-card: #FFFFFF;
+  --text-primary: #1C1A18;
+  --text-secondary: #5C554E;
+  --text-muted: #8E857C;
+  --accent-bronze: #8C7355;
+  --accent-gold: #C5A880;
+  --border-light: rgba(140, 115, 85, 0.2);
+  --border-strong: rgba(140, 115, 85, 0.45);
+
+  --font-serif: 'Cormorant Garamond', Georgia, serif;
+  --font-display: 'Playfair Display', Georgia, serif;
+  --font-sans: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+  --font-script: 'Alex Brush', cursive;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  scroll-behavior: smooth;
+  font-size: 16px;
+  background-color: var(--bg-sand);
+  color: var(--text-primary);
+}
+
+body {
+  font-family: var(--font-sans);
+  background-color: var(--bg-sand);
+  color: var(--text-primary);
+  line-height: 1.6;
+  letter-spacing: -0.01em;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  overflow-x: hidden;
+}
+
+/* ==========================================================================
+   PRINCIPAL LAYOUT & CONTAINER ARCHITECTURE
+   ========================================================================== */
+
+/* Universal Centered Container — Guarantees equal left/right padding */
+.site-container {
+  width: 100%;
+  max-width: 1200px;
+  margin-left: auto !important;
+  margin-right: auto !important;
+  padding-left: clamp(1.25rem, 3.5vw, 2.5rem);
+  padding-right: clamp(1.25rem, 3.5vw, 2.5rem);
+  box-sizing: border-box;
+}
+
+/* Universal Section Spacing */
+.site-section {
+  width: 100%;
+  padding-top: clamp(4rem, 7vw, 6.5rem);
+  padding-bottom: clamp(4rem, 7vw, 6.5rem);
+  position: relative;
+  overflow: hidden;
+  box-sizing: border-box;
+}
+
+/* Perfectly Centered Section Header */
+.section-header-centered {
+  text-align: center;
+  max-width: 680px;
+  margin-left: auto !important;
+  margin-right: auto !important;
+  margin-bottom: clamp(2rem, 4.5vw, 3.5rem);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.section-tag {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.45rem;
+  padding: 0.35rem 1rem;
+  border-radius: 9999px;
+  border: 1px solid var(--border-light);
+  background: rgba(255, 255, 255, 0.8);
+  backdrop-filter: blur(8px);
+  font-size: 0.68rem;
+  text-transform: uppercase;
+  letter-spacing: 0.24em;
+  color: var(--text-muted);
+  font-weight: 600;
+  margin-bottom: 0.85rem;
+}
+
+.section-title {
+  font-family: var(--font-display);
+  font-size: clamp(2rem, 4vw, 3.25rem);
+  font-weight: 400;
+  letter-spacing: -0.02em;
+  line-height: 1.18;
+  color: var(--text-primary);
+  margin-bottom: 0.5rem;
+}
+
+.section-divider {
+  width: 44px;
+  height: 1.5px;
+  background-color: var(--accent-bronze);
+  opacity: 0.45;
+  margin: 0.65rem auto 0.85rem auto;
+}
+
+.section-desc {
+  font-family: var(--font-sans);
+  font-size: clamp(0.85rem, 1.25vw, 0.95rem);
+  color: var(--text-secondary);
+  font-weight: 300;
+  line-height: 1.65;
+  max-width: 540px;
+  margin: 0 auto;
+}
+
+/* ==========================================================================
+   UNIFORM CARD DESIGN SYSTEM (Zero Overflow, Symmetrical Padding)
+   ========================================================================== */
+
+/* 3-Column Uniform Grid */
+.grid-cards-3 {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: clamp(1.5rem, 2.5vw, 2.25rem);
+  width: 100%;
+  box-sizing: border-box;
+}
+
+/* 2-Column Uniform Grid */
+.grid-cards-2 {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(360px, 1fr));
+  gap: clamp(1.5rem, 2.5vw, 2.25rem);
+  width: 100%;
+  box-sizing: border-box;
+}
+
+/* Card Container — Strictly contained, 0 arrow overflow */
+.luxury-card {
+  background-color: var(--bg-card);
+  border: 1px solid var(--border-light);
+  border-radius: 20px;
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  height: 100%;
+  transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+  box-shadow: 0 4px 20px rgba(28, 26, 24, 0.03);
+  position: relative;
+  overflow: hidden;
+  /* ABSOLUTE GUARANTEE: NO ARROW OR CONTENT SPILLS OUT */
+  box-sizing: border-box;
+  text-align: left;
+}
+
+.luxury-card:hover {
+  transform: translateY(-4px);
+  border-color: var(--border-strong);
+  box-shadow: 0 16px 36px -10px rgba(28, 26, 24, 0.09);
+}
+
+/* Card Image Wrapper with Fixed 16:10 Ratio */
+.card-media {
+  width: 100%;
+  aspect-ratio: 16 / 10;
+  border-radius: 12px;
+  overflow: hidden;
+  position: relative;
+  background-color: var(--bg-linen);
+  margin-bottom: 1.25rem;
+  flex-shrink: 0;
+}
+
+.card-media img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.7s ease-out;
+}
+
+.luxury-card:hover .card-media img {
+  transform: scale(1.04);
+}
+
+/* Card Body (Minimal words, punchy & elegant) */
+.card-body {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 1rem;
+}
+
+.card-tag {
+  font-size: 0.65rem;
+  text-transform: uppercase;
+  letter-spacing: 0.22em;
+  color: var(--accent-bronze);
+  font-weight: 600;
+  margin-bottom: 0.35rem;
+  display: block;
+}
+
+.card-title {
+  font-family: var(--font-display);
+  font-size: 1.3rem;
+  font-weight: 400;
+  color: var(--text-primary);
+  line-height: 1.25;
+  margin-bottom: 0.4rem;
+  transition: color 0.3s ease;
+}
+
+.luxury-card:hover .card-title {
+  color: var(--accent-bronze);
+}
+
+.card-text {
+  font-size: 0.82rem;
+  color: var(--text-secondary);
+  font-weight: 300;
+  line-height: 1.5;
+}
+
+/* Card Footer — Tightly anchors action link and arrow safely on the left */
+.card-footer {
+  padding-top: 0.85rem;
+  border-top: 1px solid rgba(140, 115, 85, 0.12);
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  /* LEFT ALIGNED WITH AMPLE BREATHING ROOM TO THE RIGHT */
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.card-action-link {
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.18em;
+  color: var(--accent-bronze);
+  font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  transition: all 0.25s ease;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+}
+
+.card-action-link svg {
+  transition: transform 0.25s ease;
+}
+
+.luxury-card:hover .card-action-link {
+  color: var(--text-primary);
+}
+
+.luxury-card:hover .card-action-link svg {
+  transform: translateX(4px);
+}
+
+/* ==========================================================================
+   CALLOUT BANNER (Centered, Symmetric, Equal Padding)
+   ========================================================================== */
+
+.date-checker-banner {
+  background-color: #FFFFFF;
+  border: 1px solid rgba(140, 115, 85, 0.25);
+  border-radius: 20px;
+  padding: clamp(1.5rem, 3vw, 2.25rem);
+  width: 100%;
+  max-width: 960px;
+  margin: 3.5rem auto 0 auto !important;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 1.5rem;
+  box-shadow: 0 8px 30px rgba(28, 26, 24, 0.04);
+  box-sizing: border-box;
+}
+
+@media (min-width: 768px) {
+  .date-checker-banner {
+    flex-direction: row;
+    justify-content: space-between;
+    text-align: left;
+    align-items: center;
+  }
+}
+
+/* ==========================================================================
+   BUTTONS (Symmetrical, Padded, High-Fashion Pill Style)
+   ========================================================================== */
+
+.btn-pill-dark {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  background-color: #1C1A18;
+  color: #FAF7F2;
+  border-radius: 9999px;
+  padding: 0.85rem 2.25rem;
+  font-family: var(--font-sans);
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.22em;
+  font-weight: 500;
+  transition: all 0.3s ease;
+  cursor: pointer;
+  border: 1px solid transparent;
+  box-shadow: 0 4px 15px rgba(28, 26, 24, 0.08);
+  white-space: nowrap;
+}
+
+.btn-pill-dark:hover {
+  background-color: var(--accent-bronze);
+  color: #FFFFFF;
+  transform: translateY(-2px);
+  box-shadow: 0 10px 25px rgba(140, 115, 85, 0.25);
+}
+
+.btn-pill-outline {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  background-color: transparent;
+  color: var(--text-primary);
+  border: 1px solid rgba(140, 115, 85, 0.35);
+  border-radius: 9999px;
+  padding: 0.85rem 2.25rem;
+  font-family: var(--font-sans);
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.22em;
+  font-weight: 500;
+  transition: all 0.3s ease;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.btn-pill-outline:hover {
+  border-color: var(--text-primary);
+  background-color: rgba(140, 115, 85, 0.08);
+  transform: translateY(-2px);
+}
+
+/* Metric Stats Strip */
+.stats-ribbon {
+  background-color: #FFFFFF;
+  border: 1px solid rgba(140, 115, 85, 0.22);
+  border-radius: 20px;
+  padding: clamp(1.75rem, 3.5vw, 2.5rem);
+  width: 100%;
+  box-sizing: border-box;
+  margin-top: 3.5rem;
+}
+
+/* Scrollbars */
+::-webkit-scrollbar {
+  width: 5px;
+  height: 5px;
+}
+
+::-webkit-scrollbar-track {
+  background: #FAF7F2;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #C5A880;
+  border-radius: 9999px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #8C7355;
+}
