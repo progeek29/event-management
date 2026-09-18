@@ -12,7 +12,7 @@ export default function ServicesSection({ services, onOpenServicePage }) {
             <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full border border-[#8C7355]/25 bg-white/60 mb-3">
               <Sparkles className="w-3 h-3 text-[#8C7355]" />
               <span className="text-[10px] uppercase tracking-[0.25em] text-[#706860] font-semibold">
-                Curated Collections • शाही संकलन
+                Curated Collections • Bespoke Vertices
               </span>
             </div>
             <h2 className="font-display text-3xl sm:text-5xl lg:text-6xl font-normal text-[#221F1C] tracking-tight leading-tight">

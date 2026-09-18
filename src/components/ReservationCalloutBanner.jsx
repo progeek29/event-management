@@ -19,7 +19,7 @@ export default function ReservationCalloutBanner({ onNavigateToReservation }) {
           {/* Sacred Tag */}
           <div className="inline-flex items-center gap-2 text-[10px] sm:text-xs uppercase tracking-[0.24em] text-[#8C7355] font-semibold mb-3">
             <Sparkles className="w-3.5 h-3.5 text-[#8C7355]" />
-            <span>Private Atelier Consultation · ॥ श्री गणेशाय नमः ॥</span>
+            <span>Private Atelier Consultation · Auspicious Muhurat</span>
             <Sparkles className="w-3.5 h-3.5 text-[#8C7355]" />
           </div>
 
@@ -39,7 +39,7 @@ export default function ReservationCalloutBanner({ onNavigateToReservation }) {
               onClick={() => onNavigateToReservation()}
               className="w-full sm:w-auto inline-flex items-center justify-center gap-2.5 px-8 py-4 rounded-full text-xs tracking-[0.18em] uppercase font-medium bg-[#221F1C] text-[#FAF7F2] hover:bg-[#8C7355] transition-all duration-300 shadow-md cursor-pointer"
             >
-              <span>Open Royal Farmaan / शाही आमंत्रण</span>
+              <span>Open Royal Farmaan Invitation Card</span>
               <ArrowRight className="w-4 h-4 text-[#C5A880]" />
             </button>
 
