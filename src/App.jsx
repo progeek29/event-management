@@ -11,6 +11,17 @@ import AdminLeadsModal from './components/AdminLeadsModal';
 import ServiceDetailPage from './components/ServiceDetailPage';
 
 import { INITIAL_LEADS, INITIAL_FINANCIALS, BANNER_SERVICES } from './data/initialData';
+import {
+  fetchAllSheetData,
+  syncCreateLead,
+  syncUpdateLeadStatus,
+  syncDeleteLead,
+  syncCreateFinancial,
+  syncUpdateFinancial,
+  syncDeleteFinancial,
+  syncUpdateOffering,
+  syncCreateOffering
+} from './services/googleSheetsService';
 
 export default function App() {
   // Multi-page routing view state: 'home' | 'service-detail' | 'admin'
@@ -89,45 +100,112 @@ export default function App() {
     }
   }, [financials]);
 
-  // Lead handling
+  // Initial load: Fetch remote data from Google Sheets if available
+  useEffect(() => {
+    async function loadSheetData() {
+      try {
+        const data = await fetchAllSheetData();
+        if (!data) return;
+
+        if (Array.isArray(data.leads) && data.leads.length > 1) {
+          const remoteLeads = data.leads.slice(1).map((row) => ({
+            id: row[0],
+            dateSubmitted: row[1],
+            clientName: row[2],
+            phone: String(row[3]),
+            occasion: row[4],
+            eventDate: row[5],
+            guestCount: row[6],
+            city: row[7],
+            status: row[8],
+            notes: row[9]
+          })).filter((l) => l.id && l.clientName);
+          if (remoteLeads.length > 0) setLeads(remoteLeads);
+        }
+
+        if (Array.isArray(data.financials) && data.financials.length > 1) {
+          const remoteFin = data.financials.slice(1).map((row) => ({
+            id: row[0],
+            clientName: row[1],
+            eventName: row[2],
+            contractValue: Number(row[3]) || 0,
+            advancePaid: Number(row[4]) || 0,
+            balanceDue: Number(row[5]) || 0,
+            decorExpense: Number(row[6]) || 0,
+            cateringExpense: Number(row[7]) || 0,
+            otherExpense: Number(row[8]) || 0,
+            paymentStatus: row[9] || 'Advance Received'
+          })).filter((f) => f.id && f.clientName);
+          if (remoteFin.length > 0) setFinancials(remoteFin);
+        }
+
+        if (Array.isArray(data.offerings) && data.offerings.length > 1) {
+          const remoteOff = data.offerings.slice(1).map((row) => ({
+            id: row[0],
+            number: row[1],
+            title: row[2],
+            subtitle: row[3],
+            image: row[4],
+            description: row[5]
+          })).filter((o) => o.id && o.title);
+          if (remoteOff.length > 0) setServices(remoteOff);
+        }
+      } catch (err) {
+        console.warn('[App] Could not load from Google Sheets:', err);
+      }
+    }
+    loadSheetData();
+  }, []);
+
+  // Lead handling (Local State + Google Sheets Sync)
   const handleLeadCreated = (newLead) => {
     setLeads((prev) => [newLead, ...prev]);
+    syncCreateLead(newLead);
   };
 
   const handleUpdateStatus = (leadId, newStatus) => {
-    setLeads((prev) =>
-      prev.map((lead) => (lead.id === leadId ? { ...lead, status: newStatus } : lead))
-    );
+    setLeads((prev) => {
+      const updated = prev.map((lead) => (lead.id === leadId ? { ...lead, status: newStatus } : lead));
+      const target = updated.find((l) => l.id === leadId);
+      if (target) syncUpdateLeadStatus(target);
+      return updated;
+    });
   };
 
   const handleDeleteLead = (leadId) => {
     setLeads((prev) => prev.filter((lead) => lead.id !== leadId));
+    syncDeleteLead(leadId);
   };
 
-  // Financial record handling (Full CRUD)
+  // Financial record handling (Full CRUD + Google Sheets Sync)
   const handleAddFinancialRecord = (newFinRecord) => {
     setFinancials((prev) => [newFinRecord, ...prev]);
+    syncCreateFinancial(newFinRecord);
   };
 
   const handleUpdateFinancialRecord = (updatedRecord) => {
     setFinancials((prev) =>
       prev.map((rec) => (rec.id === updatedRecord.id ? updatedRecord : rec))
     );
+    syncUpdateFinancial(updatedRecord);
   };
 
   const handleDeleteFinancialRecord = (recordId) => {
     setFinancials((prev) => prev.filter((rec) => rec.id !== recordId));
+    syncDeleteFinancial(recordId);
   };
 
-  // Admin service update handling
+  // Admin service update handling (Google Sheets Sync)
   const handleUpdateService = (updatedService) => {
     setServices((prev) =>
       prev.map((s) => (s.id === updatedService.id ? updatedService : s))
     );
+    syncUpdateOffering(updatedService);
   };
 
   const handleAddService = (newService) => {
     setServices((prev) => [...prev, newService]);
+    syncCreateOffering(newService);
   };
 
   // Navigation handlers
