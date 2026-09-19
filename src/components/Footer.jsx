@@ -103,13 +103,16 @@ export default function Footer({ onOpenAdmin }) {
           </div>
 
           <div className="flex items-center gap-6">
-            <button
-              onClick={onOpenAdmin}
-              className="flex items-center gap-1 text-[#A39688] hover:text-[#C5A880] transition-colors cursor-pointer text-[10px] uppercase tracking-wider"
+            <a
+              href="#admin"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center gap-1 text-[#A39688] hover:text-[#C5A880] transition-colors cursor-pointer text-[10px] uppercase tracking-wider font-medium"
+              title="Open Admin Vault in New Page"
             >
               <Lock className="w-3 h-3 text-[#C5A880]" />
-              <span>Admin Vault</span>
-            </button>
+              <span>Admin Vault ↗</span>
+            </a>
             <button
               onClick={scrollToTop}
               className="w-8 h-8 rounded-full border border-[#8C7355]/40 flex items-center justify-center text-[#C5A880] hover:bg-[#8C7355] hover:text-white transition-colors cursor-pointer"

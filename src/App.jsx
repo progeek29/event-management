@@ -2,24 +2,37 @@ import React, { useState, useEffect } from 'react';
 import Navbar from './components/Navbar';
 import Hero from './components/Hero';
 import EditorialStorySection from './components/EditorialStorySection';
-import VenuesSection from './components/VenuesSection';
+import CredibilityStatsRibbon from './components/CredibilityStatsRibbon';
 import CulinarySection from './components/CulinarySection';
 import PhilosophySection from './components/PhilosophySection';
 import DateInquirySection from './components/DateInquirySection';
 import Footer from './components/Footer';
 import AdminLeadsModal from './components/AdminLeadsModal';
 import ServiceDetailPage from './components/ServiceDetailPage';
-import RoyalInvitationBookingPage from './components/RoyalInvitationBookingPage';
 
 import { INITIAL_LEADS, INITIAL_FINANCIALS, BANNER_SERVICES } from './data/initialData';
 
 export default function App() {
-  const [isAdminOpen, setIsAdminOpen] = useState(false);
-
-  // Multi-page routing view state: 'home' | 'service-detail' | 'royal-reservation'
+  // Multi-page routing view state: 'home' | 'service-detail' | 'admin'
   const [currentView, setCurrentView] = useState('home');
   const [selectedService, setSelectedService] = useState(null);
   const [reservationOccasion, setReservationOccasion] = useState('');
+
+  // Sync URL hash with currentView ('#admin' opens admin portal page directly)
+  useEffect(() => {
+    const handleHash = () => {
+      const hash = window.location.hash.replace('#', '');
+      if (hash === 'admin') {
+        setCurrentView('admin');
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      } else if (hash === '' && currentView === 'admin') {
+        setCurrentView('home');
+      }
+    };
+    handleHash();
+    window.addEventListener('hashchange', handleHash);
+    return () => window.removeEventListener('hashchange', handleHash);
+  }, [currentView]);
 
   // Customizable Services state
   const [services, setServices] = useState(() => {
@@ -104,22 +117,45 @@ export default function App() {
   };
 
   // Navigation handlers
+  const navigateToAdmin = () => {
+    setCurrentView('admin');
+    window.location.hash = 'admin';
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
   const navigateToReservation = (occasion = '') => {
     if (occasion) {
       setReservationOccasion(occasion);
     }
-    setCurrentView('royal-reservation');
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    if (currentView !== 'home') {
+      setCurrentView('home');
+      if (window.location.hash === '#admin') {
+        window.history.pushState('', document.title, window.location.pathname + window.location.search);
+      }
+      setTimeout(() => {
+        const el = document.getElementById('inquire');
+        if (el) el.scrollIntoView({ behavior: 'smooth' });
+      }, 80);
+    } else {
+      const el = document.getElementById('inquire');
+      if (el) el.scrollIntoView({ behavior: 'smooth' });
+    }
   };
 
   const navigateToServiceDetail = (service) => {
     setSelectedService(service);
     setCurrentView('service-detail');
+    if (window.location.hash === '#admin') {
+      window.history.pushState('', document.title, window.location.pathname + window.location.search);
+    }
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
   const navigateToHome = () => {
     setCurrentView('home');
+    if (window.location.hash === '#admin') {
+      window.history.pushState('', document.title, window.location.pathname + window.location.search);
+    }
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
@@ -136,21 +172,27 @@ export default function App() {
         />
       )}
 
-      {/* 2. VIEW: Dedicated Royal Wedding Card / Farmaan Booking Page */}
-      {currentView === 'royal-reservation' && (
-        <RoyalInvitationBookingPage
-          initialOccasion={reservationOccasion}
-          onBack={navigateToHome}
-          onLeadCreated={handleLeadCreated}
+      {/* 2. VIEW: Dedicated Admin Portal Page (Opens as a New Standalone Page, Not a Popup Modal) */}
+      {currentView === 'admin' && (
+        <AdminLeadsModal
+          isOpen={true}
+          onClose={navigateToHome}
+          leads={leads}
+          onUpdateStatus={handleUpdateStatus}
+          onDeleteLead={handleDeleteLead}
+          financials={financials}
+          onAddFinancialRecord={handleAddFinancialRecord}
+          services={services}
+          onUpdateService={handleUpdateService}
         />
       )}
 
-      {/* 3. VIEW: High-Fashion Imperial Master Experience */}
+      {/* 3. VIEW: High-Fashion Imperial Master Experience (Homepage) */}
       {currentView === 'home' && (
         <>
           {/* Light Glassmorphic Sticky Header */}
           <Navbar
-            onOpenAdmin={() => setIsAdminOpen(true)}
+            onOpenAdmin={navigateToAdmin}
             onNavigateToReservation={() => navigateToReservation()}
           />
 
@@ -169,13 +211,8 @@ export default function App() {
               />
             </div>
 
-            {/* III. Destination Wedding Venues & Architecture */}
-            <div id="venues">
-              <VenuesSection
-                onNavigateToReservation={navigateToReservation}
-                onOpenServicePage={navigateToServiceDetail}
-              />
-            </div>
+            {/* III. Symmetrical Credibility & Pedigree Ribbon */}
+            <CredibilityStatsRibbon />
 
             {/* IV. The Royal Culinary Banquet — Five-Star Awadhi & Banarasi Feasts */}
             <div id="culinary">
@@ -189,9 +226,10 @@ export default function App() {
               <PhilosophySection />
             </div>
 
-            {/* VI. Auspicious Date Checker & Private Consultation */}
+            {/* VI. Auspicious Date Checker & Royal Celebration Farmaan */}
             <div id="inquire">
               <DateInquirySection
+                selectedOccasion={reservationOccasion}
                 onNavigateToReservation={navigateToReservation}
                 onLeadCreated={handleLeadCreated}
               />
@@ -201,23 +239,10 @@ export default function App() {
 
           {/* Minimalist Masthead Footer */}
           <Footer
-            onOpenAdmin={() => setIsAdminOpen(true)}
+            onOpenAdmin={navigateToAdmin}
           />
         </>
       )}
-
-      {/* Restricted Admin Leads, Finance & Photos Modal (Protected by PIN 1111) */}
-      <AdminLeadsModal
-        isOpen={isAdminOpen}
-        onClose={() => setIsAdminOpen(false)}
-        leads={leads}
-        onUpdateStatus={handleUpdateStatus}
-        onDeleteLead={handleDeleteLead}
-        financials={financials}
-        onAddFinancialRecord={handleAddFinancialRecord}
-        services={services}
-        onUpdateService={handleUpdateService}
-      />
     </div>
   );
 }

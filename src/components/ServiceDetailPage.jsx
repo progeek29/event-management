@@ -7,18 +7,72 @@ export default function ServiceDetailPage({ service, onBack, onNavigateToReserva
   const [modalForm, setModalForm] = useState({ clientName: '', phone: '', eventDate: '' });
   const [priceUnlocked, setPriceUnlocked] = useState(false);
 
+  const [phoneError, setPhoneError] = useState('');
+
   if (!service) return null;
+
+  const handlePhoneChange = (e) => {
+    let raw = e.target.value.replace(/\D/g, '');
+    if (raw.startsWith('91') && raw.length > 10) raw = raw.slice(2);
+    else if (raw.startsWith('0') && raw.length > 10) raw = raw.slice(1);
+    raw = raw.slice(0, 10);
+    setModalForm((prev) => ({ ...prev, phone: raw }));
+    if (raw.length === 10) setPhoneError('');
+  };
+
+  const handlePhoneKeyDown = (e) => {
+    if (['Backspace', 'Delete', 'ArrowLeft', 'ArrowRight', 'Tab', 'Enter', 'Home', 'End'].includes(e.key)) return;
+    if ((e.ctrlKey || e.metaKey) && ['a', 'c', 'v', 'x', 'z'].includes(e.key.toLowerCase())) return;
+    if (e.key === ' ' || e.code === 'Space') {
+      e.preventDefault();
+      return;
+    }
+    if (e.key === '+') {
+      e.preventDefault();
+      return;
+    }
+    if (!/^\d$/.test(e.key)) {
+      e.preventDefault();
+      return;
+    }
+    const input = e.target;
+    const hasSelection = input.selectionStart !== input.selectionEnd;
+    if (modalForm.phone.length >= 10 && !hasSelection) {
+      e.preventDefault();
+    }
+  };
+
+  const handlePhonePaste = (e) => {
+    e.preventDefault();
+    const pasteText = (e.clipboardData || window.clipboardData).getData('text') || '';
+    let raw = pasteText.replace(/\D/g, '');
+    if (raw.startsWith('91') && raw.length > 10) raw = raw.slice(2);
+    else if (raw.startsWith('0') && raw.length > 10) raw = raw.slice(1);
+    raw = raw.slice(0, 10);
+    setModalForm((prev) => ({ ...prev, phone: raw }));
+    if (raw.length === 10) setPhoneError('');
+  };
 
   const handlePricingSubmit = (e) => {
     e.preventDefault();
     if (!modalForm.clientName || !modalForm.phone) return;
+
+    if (modalForm.phone.length !== 10) {
+      setPhoneError('Please enter an exact 10-digit mobile number.');
+      return;
+    }
+
+    if (!/^[6-9]\d{9}$/.test(modalForm.phone)) {
+      setPhoneError('Please enter a valid 10-digit mobile number starting with 6, 7, 8, or 9.');
+      return;
+    }
 
     if (onLeadCreated) {
       onLeadCreated({
         id: `SRE-${new Date().getFullYear()}-${Math.floor(100 + Math.random() * 900)}`,
         dateSubmitted: new Date().toISOString().replace('T', ' ').substring(0, 16),
         clientName: modalForm.clientName,
-        phone: modalForm.phone,
+        phone: modalForm.phone.trim(),
         occasion: service.title,
         eventDate: modalForm.eventDate || 'To Be Decided',
         guestCount: 'Bespoke Package Request',
@@ -296,12 +350,21 @@ export default function ServiceDetailPage({ service, onBack, onNavigateToReserva
                     </label>
                     <input
                       type="tel"
-                      placeholder="+91 98765 43210"
+                      inputMode="numeric"
+                      pattern="[0-9]{10}"
+                      minLength={10}
+                      maxLength={10}
+                      placeholder="9826142216"
                       value={modalForm.phone}
-                      onChange={(e) => setModalForm({ ...modalForm, phone: e.target.value })}
-                      className="w-full px-4 py-2.5 rounded-xl border border-[#C5A880]/50 bg-white text-xs text-[#0D1B2A] focus:outline-none focus:border-[#0D1B2A]"
+                      onChange={handlePhoneChange}
+                      onKeyDown={handlePhoneKeyDown}
+                      onPaste={handlePhonePaste}
+                      className="w-full px-4 py-2.5 rounded-xl border border-[#C5A880]/50 bg-white text-xs text-[#0D1B2A] focus:outline-none focus:border-[#0D1B2A] tracking-widest font-medium"
                       required
                     />
+                    {phoneError && (
+                      <div className="text-[10px] text-[#C05621] mt-1 font-medium">{phoneError}</div>
+                    )}
                   </div>
 
                   <div>

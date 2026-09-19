@@ -4,7 +4,7 @@ import { BRAND_INFO } from '../data/initialData';
 
 export default function Hero({ onNavigateToReservation }) {
   return (
-    <section className="relative w-full min-h-[92vh] flex flex-col justify-between overflow-hidden pt-32 pb-12 bg-[#FAF7F2]">
+    <section className="relative w-full min-h-[80vh] flex flex-col justify-between overflow-hidden pt-24 sm:pt-28 pb-6 sm:pb-8 bg-[#FAF7F2]">
 
       {/* Editorial Daylight Photo Background with Gentle Luminance */}
       <div
@@ -19,35 +19,24 @@ export default function Hero({ onNavigateToReservation }) {
       <div className="site-container relative z-10 flex-1 flex flex-col items-center justify-center text-center my-auto">
 
         {/* Subtle Diamond Soulmate Tag */}
-        <div className="inline-flex items-center gap-2.5 px-4 py-1.5 rounded-full border border-[#8C7355]/30 bg-white/85 backdrop-blur-xs mb-6 shadow-2xs">
+        <div className="inline-flex items-center gap-2.5 px-4 py-1.5 rounded-full border border-[#8C7355]/30 bg-white/85 backdrop-blur-xs mb-5 shadow-2xs">
           <span className="text-[#8C7355] text-xs">❖</span>
           <span className="text-[10px] sm:text-[11px] uppercase tracking-[0.28em] text-[#706860] font-semibold">
-            Found your perfect soulmate?
+            Found your perfect soulmate
           </span>
           <span className="text-[#8C7355] text-xs">❖</span>
         </div>
 
         {/* High-End Editorial Display Headline */}
-        <h1 className="font-display text-4xl sm:text-6xl md:text-7xl lg:text-8xl font-normal text-[#1C1A18] tracking-tight leading-[1.08] mb-5">
+        <h1 className="font-display text-4xl sm:text-6xl md:text-7xl lg:text-8xl font-normal text-[#1C1A18] tracking-tight leading-[1.08] mb-4">
           The moments that <br />
           <span className="font-serif italic font-light text-[#8C7355]">become memories.</span>
         </h1>
 
         {/* Minimalist, Poetic Description */}
-        <p className="font-sans text-sm sm:text-base md:text-lg text-[#5C554E] font-light max-w-xl leading-relaxed mb-7 mx-auto">
-          Marriage is a sacred covenant. We craft serene destination weddings with architectural mandaps, starlit lawns, and 5-star royal catering.
+        <p className="font-sans text-sm sm:text-base md:text-lg text-[#5C554E] font-light max-w-xl leading-relaxed mb-6 mx-auto">
+          Marriage is a sacred covenant. We craft regal wedding celebrations with architectural royal mandaps, exquisite banquets, and 5-star royal catering.
         </p>
-
-        {/* Minimalist Attribute Line with Diamond Separators */}
-        <div className="flex items-center justify-center gap-2.5 sm:gap-4 mb-8 text-[10px] sm:text-[11px] uppercase tracking-[0.24em] text-[#8C7355] font-medium">
-          <span>Candid</span>
-          <span className="text-[#8C7355]/40 text-[9px]">❖</span>
-          <span>Cinematic</span>
-          <span className="text-[#8C7355]/40 text-[9px]">❖</span>
-          <span>Emotional</span>
-          <span className="text-[#8C7355]/40 text-[9px]">❖</span>
-          <span>Sacred</span>
-        </div>
 
         {/* Symmetrical CTA Buttons */}
         <div className="flex flex-col sm:flex-row gap-3.5 items-center justify-center w-full sm:w-auto">
@@ -73,13 +62,11 @@ export default function Hero({ onNavigateToReservation }) {
 
       </div>
 
-      {/* Symmetrical Understated Metric Ribbon */}
-      <div className="relative z-10 w-full px-4 pt-6 border-t border-[#8C7355]/20 flex flex-wrap justify-center items-center gap-3 sm:gap-6 text-[10px] sm:text-[11px] uppercase tracking-[0.22em] text-[#706860]">
+      {/* Symmetrical Understated Metric Ribbon — No Thin Line */}
+      <div className="relative z-10 w-full px-4 pt-4 mt-2 flex flex-wrap justify-center items-center gap-3 sm:gap-6 text-[10px] sm:text-[11px] uppercase tracking-[0.22em] text-[#706860]">
         <span>500+ Ceremonies</span>
         <span className="text-[#8C7355]/40 hidden sm:inline text-[9px]">❖</span>
-        <span>Destination Mandap</span>
-        <span className="text-[#8C7355]/40 hidden sm:inline text-[9px]">❖</span>
-        <span>40,000 Sq.Ft Lawns</span>
+        <span>Royal Mandap Decor</span>
         <span className="text-[#8C7355]/40 hidden sm:inline text-[9px]">❖</span>
         <span>Royal Awadhi Feasts</span>
         <span className="text-[#8C7355]/40 hidden sm:inline text-[9px]">❖</span>
