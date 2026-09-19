@@ -51,7 +51,7 @@ export default function App() {
       const saved = localStorage.getItem('sre_services_data');
       if (saved) {
         const parsed = JSON.parse(saved);
-        if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+        if (Array.isArray(parsed) && parsed.length >= 6) return parsed;
       }
       return BANNER_SERVICES;
     } catch {
@@ -311,9 +311,10 @@ export default function App() {
               onNavigateToReservation={navigateToReservation}
             />
 
-            {/* II. The 5 Photographic Stories — Sacred Union */}
+            {/* II. The 6 Photographic Stories — Sacred Union */}
             <div id="moments">
               <EditorialStorySection
+                services={services}
                 onNavigateToReservation={navigateToReservation}
               />
             </div>

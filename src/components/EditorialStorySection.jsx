@@ -43,11 +43,32 @@ const PHOTO_STORIES = [
     caption: 'Traditional havan setups, auspicious floral doorways, and heartfelt family feasts.',
     image: '/events/housewarming_event.jpg',
     dialogue: 'Blessing your new residence with sacred Vedic rituals, fragrant marigold torans, intimate courtyard seating, and pure celebratory dining.'
+  },
+  {
+    id: 'story-6',
+    theme: 'Cinematic Films',
+    title: 'Timeless Stories & Emotional Films',
+    caption: 'Candid wedding cinematography, aerial drone telecast, and royal heirloom albums.',
+    image: '/events/timeless-stories-editorial.jpg',
+    dialogue: 'Preserving every tear, whisper, and joyous laugh in 4K cinematic grandeur that will outlive generations.'
   }
 ];
 
-export default function EditorialStorySection({ onNavigateToReservation }) {
+export default function EditorialStorySection({ services = [], onNavigateToReservation }) {
   const [activeStory, setActiveStory] = useState(null);
+
+  // Map live admin services to the 6 editorial photo stories
+  const displayStories = PHOTO_STORIES.map((defaultStory, index) => {
+    const srv = services && services[index];
+    if (!srv) return defaultStory;
+    return {
+      ...defaultStory,
+      title: srv.title || defaultStory.title,
+      theme: srv.subtitle || defaultStory.theme,
+      caption: srv.description || defaultStory.caption,
+      image: srv.image || defaultStory.image
+    };
+  });
 
   const handleWhatsApp = (title) => {
     const text = encodeURIComponent(
@@ -83,7 +104,7 @@ export default function EditorialStorySection({ onNavigateToReservation }) {
 
         {/* Row 1: 3 Symmetrical Cards */}
         <div className="grid-cards-3 mb-8">
-          {PHOTO_STORIES.slice(0, 3).map((story) => (
+          {displayStories.slice(0, 3).map((story) => (
             <div
               key={story.id}
               onClick={() => setActiveStory(story)}
@@ -95,6 +116,9 @@ export default function EditorialStorySection({ onNavigateToReservation }) {
                     src={story.image}
                     alt={story.title}
                     loading="lazy"
+                    onError={(e) => {
+                      e.currentTarget.src = housewarmingImg;
+                    }}
                   />
                   <div className="absolute top-3 left-3">
                     <span className="text-[9px] uppercase tracking-[0.2em] px-3 py-1 rounded-full bg-white/95 text-[#1C1A18] font-semibold backdrop-blur-xs shadow-xs">
@@ -124,9 +148,9 @@ export default function EditorialStorySection({ onNavigateToReservation }) {
           ))}
         </div>
 
-        {/* Row 2: 2 Symmetrical Cards */}
-        <div className="grid-cards-2">
-          {PHOTO_STORIES.slice(3, 5).map((story) => (
+        {/* Row 2: 3 Symmetrical Cards */}
+        <div className="grid-cards-3">
+          {displayStories.slice(3, 6).map((story) => (
             <div
               key={story.id}
               onClick={() => setActiveStory(story)}
