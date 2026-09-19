@@ -154,6 +154,7 @@ export default function AdminLeadsModal({
   const [activeTab, setActiveTab] = useState('leads'); // 'leads' | 'financials' | 'content'
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState('All');
+  const [viewingLead, setViewingLead] = useState(null);
   
   // Financial CRUD State
   const [finSearchTerm, setFinSearchTerm] = useState('');
@@ -215,7 +216,7 @@ export default function AdminLeadsModal({
   const exportLeadsToExcel = () => {
     const cleanData = leads.map(lead => ({
       'Lead / Farmaan ID': lead.id,
-      'Inquiry Received At (Kab Inquiry Aayi)': lead.dateSubmitted,
+      'Inquiry Received At': lead.dateSubmitted,
       'Patron Full Name': lead.clientName,
       'Contact Phone': lead.phone,
       'Celebration Occasion': lead.occasion,
@@ -377,32 +378,18 @@ export default function AdminLeadsModal({
         
         {/* Top Header — Dedicated Page Navigation Bar */}
         <header className="sticky top-0 z-40 bg-[#1A1A1A] px-4 sm:px-8 py-3.5 border-b border-[#C9A86A]/40 flex items-center justify-between text-[#FAF7F2] shadow-md">
-          <div className="flex items-center gap-3 sm:gap-5">
-            <button
-              type="button"
-              onClick={onClose}
-              className="inline-flex items-center gap-2 px-3 py-1.5 rounded-md border border-[#C9A86A]/50 bg-white/5 hover:bg-white/10 text-xs font-sans text-[#C9A86A] hover:text-[#FAF7F2] transition-all cursor-pointer tracking-wider uppercase font-medium"
-              title="Return to Public Website"
-            >
-              <ArrowLeft className="w-3.5 h-3.5 text-[#C9A86A]" />
-              <span>← Back to Website</span>
-            </button>
-
-            <div className="h-5 w-px bg-[#C9A86A]/30 hidden sm:block" />
-
-            <div className="flex items-center gap-3">
-              <div className="w-8 h-8 rounded-full bg-[#FAF7F2] border border-[#C9A86A] flex items-center justify-center text-[#C9A86A] font-serif font-bold text-sm shadow-xs">
-                SR
-              </div>
-              <div>
-                <h1 className="font-serif text-base sm:text-lg text-[#FAF7F2] tracking-wide flex items-center gap-2 m-0 p-0 font-normal">
-                  <span>Shree Ram Events</span>
-                  <span className="text-[#C9A86A] text-[11px] font-sans tracking-[0.2em] uppercase font-light hidden md:inline">• Admin Master Portal</span>
-                </h1>
-                <span className="text-[10px] font-sans tracking-[0.22em] uppercase text-[#C9A86A] font-medium hidden sm:block">
-                  Royal Farmaan Inquiries & Private Registry
-                </span>
-              </div>
+          <div className="flex items-center gap-3 sm:gap-4">
+            <div className="w-8 h-8 rounded-full bg-[#FAF7F2] border border-[#C9A86A] flex items-center justify-center text-[#C9A86A] font-serif font-bold text-sm shadow-xs">
+              SR
+            </div>
+            <div>
+              <h1 className="font-serif text-base sm:text-lg text-[#FAF7F2] tracking-wide flex items-center gap-2 m-0 p-0 font-normal">
+                <span>Shree Ram Events</span>
+                <span className="text-[#C9A86A] text-[11px] font-sans tracking-[0.2em] uppercase font-light hidden md:inline">• Admin Master Portal</span>
+              </h1>
+              <span className="text-[10px] font-sans tracking-[0.22em] uppercase text-[#C9A86A] font-medium hidden sm:block">
+                Royal Farmaan Inquiries & Private Registry
+              </span>
             </div>
           </div>
 
@@ -648,7 +635,7 @@ export default function AdminLeadsModal({
                           <th className="py-3 px-3.5 font-sans tracking-wider uppercase font-semibold">Auspicious Date</th>
                           <th className="py-3 px-3.5 font-sans tracking-wider uppercase font-semibold">Occasion & Assembly</th>
                           <th className="py-3 px-3.5 font-sans tracking-wider uppercase font-semibold">Venue City</th>
-                          <th className="py-3 px-3.5 font-sans tracking-wider uppercase font-semibold">Inquiry Received ("Kab Aayi")</th>
+                          <th className="py-3 px-3.5 font-sans tracking-wider uppercase font-semibold">Inquiry Received</th>
                           <th className="py-3 px-3.5 font-sans tracking-wider uppercase font-semibold">Status</th>
                           <th className="py-3 px-3.5 font-sans tracking-wider uppercase font-semibold text-right">Actions</th>
                         </tr>
@@ -663,16 +650,24 @@ export default function AdminLeadsModal({
                                 {lead.id}
                               </td>
 
-                              {/* Patron Name & Special Notes */}
+                              {/* Patron Name & Special Notes - Click to view full description modal */}
                               <td className="py-3.5 px-3.5">
-                                <div className="font-serif text-sm font-semibold text-[#1A1A1A]">
-                                  {lead.clientName}
-                                </div>
-                                {lead.notes && (
-                                  <div className="text-[11px] text-[#7A7266] line-clamp-1 max-w-xs mt-0.5" title={lead.notes}>
-                                    "{lead.notes}"
+                                <button
+                                  type="button"
+                                  onClick={() => setViewingLead(lead)}
+                                  className="text-left group cursor-pointer"
+                                  title="Click to view full inquiry vision and description"
+                                >
+                                  <div className="font-serif text-sm font-semibold text-[#1A1A1A] group-hover:text-[#8C6B28] transition-colors flex items-center gap-1.5">
+                                    <span>{lead.clientName}</span>
+                                    <Eye className="w-3.5 h-3.5 opacity-0 group-hover:opacity-100 text-[#C9A86A] transition-opacity" />
                                   </div>
-                                )}
+                                  {lead.notes && (
+                                    <div className="text-[11px] text-[#7A7266] line-clamp-1 max-w-xs mt-0.5 group-hover:text-[#5A5246] transition-colors">
+                                      "{lead.notes}"
+                                    </div>
+                                  )}
+                                </button>
                               </td>
 
                               {/* Contact & WhatsApp / Call Buttons */}
@@ -721,7 +716,7 @@ export default function AdminLeadsModal({
                                 {lead.city || 'Bhilai / Durg'}
                               </td>
 
-                              {/* Inquiry Received Timestamp ("Kab Inquiry Aayi") */}
+                              {/* Inquiry Received Timestamp */}
                               <td className="py-3.5 px-3.5 whitespace-nowrap">
                                 <div className="inline-flex items-center gap-1 text-[11px] text-[#5C554E] font-sans font-normal">
                                   <Clock className="w-3 h-3 text-[#8A7E6D]" />
@@ -739,17 +734,27 @@ export default function AdminLeadsModal({
 
                               {/* Actions */}
                               <td className="py-3.5 px-3.5 text-right whitespace-nowrap">
-                                <button
-                                  onClick={() => {
-                                    if (window.confirm(`Are you sure you want to remove inquiry for ${lead.clientName}?`)) {
-                                      onDeleteLead && onDeleteLead(lead.id);
-                                    }
-                                  }}
-                                  className="p-1.5 text-[#A39688] hover:text-[#9B2C2C] hover:bg-[#FFF5F5] rounded-md transition-colors cursor-pointer"
-                                  title="Delete Inquiry"
-                                >
-                                  <Trash2 className="w-4 h-4" />
-                                </button>
+                                <div className="inline-flex items-center gap-1">
+                                  <button
+                                    type="button"
+                                    onClick={() => setViewingLead(lead)}
+                                    className="p-1.5 text-[#8C6B28] hover:text-[#1A1A1A] hover:bg-[#FAF4E6] rounded-md transition-colors cursor-pointer"
+                                    title="View Full Farmaan Description"
+                                  >
+                                    <Eye className="w-4 h-4" />
+                                  </button>
+                                  <button
+                                    onClick={() => {
+                                      if (window.confirm(`Are you sure you want to remove inquiry for ${lead.clientName}?`)) {
+                                        onDeleteLead && onDeleteLead(lead.id);
+                                      }
+                                    }}
+                                    className="p-1.5 text-[#A39688] hover:text-[#9B2C2C] hover:bg-[#FFF5F5] rounded-md transition-colors cursor-pointer"
+                                    title="Delete Inquiry"
+                                  >
+                                    <Trash2 className="w-4 h-4" />
+                                  </button>
+                                </div>
                               </td>
                             </tr>
                           );
@@ -810,7 +815,7 @@ export default function AdminLeadsModal({
                       className="px-3.5 py-1.5 rounded-lg bg-[#1A1A1A] hover:bg-[#C9A86A] text-white text-xs font-sans flex items-center gap-1.5 cursor-pointer transition-all shadow-sm font-semibold hover:text-[#1A1A1A]"
                     >
                       <Plus className="w-3.5 h-3.5" />
-                      <span>+ Add Event Record</span>
+                      <span>Add Event Record</span>
                     </button>
                   </div>
                 </div>
@@ -837,7 +842,7 @@ export default function AdminLeadsModal({
 
                   <div className="bg-[#FFFDF9] border border-[#E9DCC0] rounded-xl p-4 shadow-2xs">
                     <span className="text-[10px] font-sans uppercase tracking-[0.2em] text-[#A26214] block mb-1 font-semibold">
-                      Balance Outstanding
+                      Pending Balance Dues
                     </span>
                     <span className="font-serif text-2xl text-[#A26214] font-bold">
                       ₹{totalBalanceDue.toLocaleString('en-IN')}
@@ -859,7 +864,7 @@ export default function AdminLeadsModal({
                   {filteredFinancials.length === 0 ? (
                     <div className="p-8 text-center text-[#8A7E6D]">
                       <p className="font-serif text-base text-[#1A1A1A] mb-1">No Financial Entries Found</p>
-                      <p className="text-xs">Click "+ Add Event Record" to add an entry to your ledger.</p>
+                      <p className="text-xs">Click "Add Event Record" to add an entry to your ledger.</p>
                     </div>
                   ) : (
                     <table className="w-full text-left border-collapse text-xs">
@@ -973,7 +978,7 @@ export default function AdminLeadsModal({
                     className="px-3.5 py-1.5 rounded-lg bg-[#1A1A1A] hover:bg-[#C9A86A] text-white text-xs font-sans flex items-center gap-1.5 cursor-pointer transition-all shadow-sm font-semibold hover:text-[#1A1A1A] self-start sm:self-auto"
                   >
                     <Plus className="w-3.5 h-3.5" />
-                    <span>+ Add New Offering Card</span>
+                    <span>Add Offering Card</span>
                   </button>
                 </div>
 
@@ -1379,6 +1384,142 @@ export default function AdminLeadsModal({
                   </button>
                 </div>
               </form>
+            </div>
+          </div>
+        )}
+
+        {/* Modal: View Full Farmaan Inquiry Description & Patron Dossier */}
+        {viewingLead && (
+          <div className="fixed inset-0 z-60 flex items-center justify-center p-4 bg-[#1A1A1A]/70 backdrop-blur-xs animate-in fade-in duration-200">
+            <div className="bg-[#FFFDF9] border border-[#C9A86A] rounded-2xl max-w-xl w-full p-6 sm:p-8 shadow-2xl max-h-[90vh] overflow-y-auto relative">
+              
+              {/* Corner Filigree */}
+              <div className="absolute top-3 left-3 w-3 h-3 border-t-2 border-l-2 border-[#C9A86A]/60" />
+              <div className="absolute top-3 right-3 w-3 h-3 border-t-2 border-r-2 border-[#C9A86A]/60" />
+
+              {/* Header */}
+              <div className="flex items-start justify-between pb-4 border-b border-[#E9DCC0] mb-5">
+                <div>
+                  <span className="font-mono text-[11px] text-[#8C6B28] font-semibold tracking-wider block mb-1">
+                    {viewingLead.id}
+                  </span>
+                  <h3 className="font-serif text-2xl text-[#1A1A1A] font-medium m-0">
+                    {viewingLead.clientName}
+                  </h3>
+                  <p className="text-xs text-[#7A7266] m-0 mt-0.5">
+                    Royal Farmaan Celebration Inquiry Dossier
+                  </p>
+                </div>
+                <button
+                  onClick={() => setViewingLead(null)}
+                  className="text-[#8A7E6D] hover:text-[#1A1A1A] p-1.5 rounded-lg hover:bg-[#FAF4E6] cursor-pointer transition-colors"
+                  title="Close Dossier"
+                >
+                  <X className="w-5 h-5" />
+                </button>
+              </div>
+
+              {/* Overview Grid */}
+              <div className="grid grid-cols-2 sm:grid-cols-3 gap-3.5 mb-5 text-xs">
+                <div className="bg-[#FAF7F2] p-3 rounded-xl border border-[#E9DCC0]">
+                  <span className="block text-[10px] uppercase tracking-wider text-[#8A7E6D] font-semibold mb-1">
+                    Occasion
+                  </span>
+                  <span className="font-serif text-sm text-[#1A1A1A] font-medium block">
+                    {viewingLead.occasion || 'Private Celebration'}
+                  </span>
+                </div>
+
+                <div className="bg-[#FAF7F2] p-3 rounded-xl border border-[#E9DCC0]">
+                  <span className="block text-[10px] uppercase tracking-wider text-[#8A7E6D] font-semibold mb-1">
+                    Auspicious Date
+                  </span>
+                  <span className="font-sans text-xs text-[#1A1A1A] font-semibold block">
+                    {viewingLead.eventDate || 'To be finalized'}
+                  </span>
+                </div>
+
+                <div className="bg-[#FAF7F2] p-3 rounded-xl border border-[#E9DCC0]">
+                  <span className="block text-[10px] uppercase tracking-wider text-[#8A7E6D] font-semibold mb-1">
+                    Estimated Assembly
+                  </span>
+                  <span className="font-sans text-xs text-[#1A1A1A] font-semibold block">
+                    {viewingLead.guestCount || 'Not specified'}
+                  </span>
+                </div>
+
+                <div className="bg-[#FAF7F2] p-3 rounded-xl border border-[#E9DCC0]">
+                  <span className="block text-[10px] uppercase tracking-wider text-[#8A7E6D] font-semibold mb-1">
+                    Celebration City
+                  </span>
+                  <span className="font-sans text-xs text-[#1A1A1A] font-semibold block">
+                    {viewingLead.city || 'Bhilai / Durg'}
+                  </span>
+                </div>
+
+                <div className="bg-[#FAF7F2] p-3 rounded-xl border border-[#E9DCC0]">
+                  <span className="block text-[10px] uppercase tracking-wider text-[#8A7E6D] font-semibold mb-1">
+                    Inquiry Received
+                  </span>
+                  <span className="font-sans text-xs text-[#5C554E] block">
+                    {viewingLead.dateSubmitted || 'Recent'}
+                  </span>
+                </div>
+
+                <div className="bg-[#FAF7F2] p-3 rounded-xl border border-[#E9DCC0]">
+                  <span className="block text-[10px] uppercase tracking-wider text-[#8A7E6D] font-semibold mb-1">
+                    Current Status
+                  </span>
+                  <span className="font-sans text-xs font-semibold text-[#8C6B28] block">
+                    {viewingLead.status || 'Farmaan Bestowed'}
+                  </span>
+                </div>
+              </div>
+
+              {/* FULL UNCLIPPED DESCRIPTION / CLIENT NOTES */}
+              <div className="mb-6">
+                <label className="block text-[11px] font-sans uppercase tracking-[0.2em] text-[#8C6B28] font-semibold mb-2">
+                  Special Vision & Bespoke Requirements (Full Description)
+                </label>
+                <div className="bg-[#FAF4E6]/50 border-2 border-[#E2D1A6] rounded-xl p-4 sm:p-5 text-sm font-serif text-[#2D2823] leading-relaxed shadow-inner min-h-[100px] whitespace-pre-wrap">
+                  {viewingLead.notes && viewingLead.notes.trim().length > 0 ? (
+                    `"${viewingLead.notes}"`
+                  ) : (
+                    <span className="text-[#8A7E6D] italic">No special notes provided by patron.</span>
+                  )}
+                </div>
+              </div>
+
+              {/* Quick Actions Footer */}
+              <div className="pt-4 border-t border-[#E9DCC0] flex flex-wrap items-center justify-between gap-3">
+                <div className="flex items-center gap-2">
+                  <a
+                    href={`tel:${(viewingLead.phone || '').replace(/[^0-9]/g, '')}`}
+                    className="px-3.5 py-2 rounded-lg bg-[#FAF4E6] text-[#1A1A1A] border border-[#E2D1A6] text-xs font-semibold flex items-center gap-1.5 hover:bg-[#C9A86A] hover:text-white transition-colors"
+                  >
+                    <Phone className="w-3.5 h-3.5 text-[#8C6B28]" />
+                    <span>Call Patron ({viewingLead.phone})</span>
+                  </a>
+                  <a
+                    href={`https://wa.me/${(viewingLead.phone || '').replace(/[^0-9]/g, '')}?text=Pranam%20${encodeURIComponent(viewingLead.clientName)},%20this%20is%20Vishal%20Pratap%20Singh%20from%20Shree%20Ram%20Events%20regarding%20your%20Royal%20Farmaan%20reservation.`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="px-3.5 py-2 rounded-lg bg-[#EBF7EE] text-[#1D6F42] border border-[#A7DFBA] text-xs font-semibold flex items-center gap-1.5 hover:bg-[#255241] hover:text-white transition-colors"
+                  >
+                    <MessageSquare className="w-3.5 h-3.5 text-[#1D6F42]" />
+                    <span>WhatsApp Connect</span>
+                  </a>
+                </div>
+
+                <button
+                  type="button"
+                  onClick={() => setViewingLead(null)}
+                  className="px-5 py-2 rounded-lg bg-[#1A1A1A] text-white text-xs font-semibold hover:bg-[#C9A86A] hover:text-[#1A1A1A] transition-colors cursor-pointer"
+                >
+                  Close Dossier
+                </button>
+              </div>
+
             </div>
           </div>
         )}

@@ -162,6 +162,29 @@ export const BANNER_SERVICES = [
       "100% शुद्ध सात्विक प्रसादम (बिना प्याज-लहसुन)",
       "भक्ति संगीत साउंड एवं पारंपरिक बैठक व्यवस्था"
     ]
+  },
+  {
+    id: "cinematic",
+    number: "06",
+    title: "Cinematic Films & Royal Photography",
+    titleHi: "सिनेमैटिक फ़िल्म्स एवं शाही फोटोग्राफी",
+    subtitle: "Drone Telecast, Pre-Weddings & Albums",
+    subtitleHi: "ड्रोन टेलीकास्ट, प्री-वेडिंग व लेदर एल्बम",
+    description: "Candid, cinematic, and emotional wedding documentation capturing authentic tears, laughter, and rituals that outlive generations.",
+    descriptionHi: "कैंडिड व सिनेमैटिक वेडिंग फोटोग्राफी, ड्रोन कवरेज, प्री-वेडिंग शूट्स और 4K लाइव स्ट्रीमिंग व्यवस्था।",
+    image: "/events/timeless-stories-editorial.jpg",
+    features: [
+      "4K Ultra-HD Multi-Cam Live Video Telecast",
+      "Cinematic Teaser & Full Wedding Heritage Film",
+      "Aerial Drone Coverage & Pre-Wedding Shoots",
+      "Handcrafted Leather Bound Royal Photo Album"
+    ],
+    featuresHi: [
+      "4K अल्ट्रा-एचडी मल्टी-कैमरा लाइव टेलीकास्ट",
+      "सिनेमैटिक टीज़र एवं सम्पूर्ण वेडिंग हेरिटेज फ़िल्म",
+      "एरियल ड्रोन कवरेज व प्री-वेडिंग शूट्स",
+      "हैंडक्राफ्टेड लेदर बाउंड रॉयल फ़ोटो एल्बम"
+    ]
   }
 ];
 
