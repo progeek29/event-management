@@ -49,7 +49,11 @@ export default function App() {
   const [services, setServices] = useState(() => {
     try {
       const saved = localStorage.getItem('sre_services_data');
-      return saved ? JSON.parse(saved) : BANNER_SERVICES;
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+      }
+      return BANNER_SERVICES;
     } catch {
       return BANNER_SERVICES;
     }
@@ -59,7 +63,11 @@ export default function App() {
   const [leads, setLeads] = useState(() => {
     try {
       const saved = localStorage.getItem('sre_leads');
-      return saved ? JSON.parse(saved) : INITIAL_LEADS;
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+      }
+      return INITIAL_LEADS;
     } catch {
       return INITIAL_LEADS;
     }
@@ -69,7 +77,11 @@ export default function App() {
   const [financials, setFinancials] = useState(() => {
     try {
       const saved = localStorage.getItem('sre_financials');
-      return saved ? JSON.parse(saved) : INITIAL_FINANCIALS;
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+      }
+      return INITIAL_FINANCIALS;
     } catch {
       return INITIAL_FINANCIALS;
     }
