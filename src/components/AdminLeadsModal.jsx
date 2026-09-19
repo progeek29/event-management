@@ -353,11 +353,23 @@ export default function AdminLeadsModal({
   });
 
   // Financial calculations
-  const totalRevenue = financials.reduce((acc, f) => acc + (Number(f.contractValue) || 0), 0);
-  const totalAdvance = financials.reduce((acc, f) => acc + (Number(f.advancePaid) || 0), 0);
-  const totalBalanceDue = financials.reduce((acc, f) => acc + (Number(f.balanceDue) || 0), 0);
-  const totalExpenses = financials.reduce((acc, f) => acc + (Number(f.decorExpense) || 0) + (Number(f.cateringExpense) || 0) + (Number(f.otherExpense) || 0), 0);
+  const totalRevenue = (financials || []).reduce((acc, f) => acc + (Number(f.contractValue) || 0), 0);
+  const totalAdvance = (financials || []).reduce((acc, f) => acc + (Number(f.advancePaid) || 0), 0);
+  const totalBalanceDue = (financials || []).reduce((acc, f) => acc + (Number(f.balanceDue) || 0), 0);
+  const totalExpenses = (financials || []).reduce((acc, f) => acc + (Number(f.decorExpense) || 0) + (Number(f.cateringExpense) || 0) + (Number(f.otherExpense) || 0), 0);
   const totalNetMargin = totalRevenue - totalExpenses;
+
+  // Filter financial ledger records
+  const filteredFinancials = (financials || []).filter((f) => {
+    if (!finSearchTerm) return true;
+    const term = finSearchTerm.toLowerCase();
+    return (
+      (f.clientName || '').toLowerCase().includes(term) ||
+      (f.eventName || '').toLowerCase().includes(term) ||
+      (f.paymentStatus || '').toLowerCase().includes(term) ||
+      (f.id || '').toLowerCase().includes(term)
+    );
+  });
 
   return (
     <div className="w-full min-h-screen bg-[#FAF7F2] text-[#1A1A1A] flex flex-col font-sans selection:bg-[#C9A86A]/20">
