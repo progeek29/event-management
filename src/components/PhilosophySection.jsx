@@ -25,12 +25,12 @@ export default function PhilosophySection() {
 
         <div className="section-divider mb-6" />
 
-        <p className="section-desc mb-12">
+        <p className="section-desc max-w-2xl mx-auto">
           We shoulder every logistical, architectural, and hospitality detail so you and your family can immerse completely in the sacred rituals.
         </p>
 
         {/* 3 Symmetrical Founder Stewardship Cards */}
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 max-w-4xl mx-auto">
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 max-w-4xl mx-auto mt-10 sm:mt-14">
           {BRAND_INFO.contacts.map((director, idx) => (
             <div
               key={idx}
@@ -64,7 +64,7 @@ export default function PhilosophySection() {
                   className="inline-flex items-center justify-center gap-1.5 text-xs font-medium text-[#8C7355] hover:text-[#1C1A18] transition-colors"
                 >
                   <MessageSquare className="w-3.5 h-3.5 text-[#8C7355]" />
-                  <span>WhatsApp Direct</span>
+                  <span>WhatsApp</span>
                 </a>
               </div>
             </div>

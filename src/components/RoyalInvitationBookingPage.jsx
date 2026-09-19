@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import { ArrowLeft, MessageSquare, Send, Award, Sparkles, ShieldCheck } from 'lucide-react';
 import { BRAND_INFO } from '../data/initialData';
+import CustomSelect from './CustomSelect';
+import CustomDatePicker from './CustomDatePicker';
 
 export default function RoyalInvitationBookingPage({ initialOccasion = '', onBack, onLeadCreated }) {
   const [formData, setFormData] = useState({
@@ -8,7 +10,7 @@ export default function RoyalInvitationBookingPage({ initialOccasion = '', onBac
     phone: '',
     occasion: initialOccasion || 'Wedding Ceremonies & Mandap',
     eventDate: '',
-    guestCount: '300 - 600 Guests (Grand Royal)',
+    guestCount: '300 - 600 Guests (Grand Royal Banquet)',
     city: 'Bhilai / Durg',
     customNotes: ''
   });
@@ -26,10 +28,10 @@ export default function RoyalInvitationBookingPage({ initialOccasion = '', onBac
   ];
 
   const guestCounts = [
-    '50 - 150 Guests (Intimate Heritage)',
-    '150 - 300 Guests (Prestige Gathering)',
-    '300 - 600 Guests (Grand Royal)',
-    '600 - 1,500+ Guests (Imperial Aristocracy)'
+    '50 - 150 Guests (Intimate Family Gathering)',
+    '150 - 300 Guests (Classic Celebration)',
+    '300 - 600 Guests (Grand Royal Banquet)',
+    '600 - 1,500+ Guests (Sprawling Lawn Gala)'
   ];
 
   const cities = [
@@ -39,10 +41,84 @@ export default function RoyalInvitationBookingPage({ initialOccasion = '', onBac
     'Other Chhattisgarh Destination'
   ];
 
+  // Phone sanitization & change handler
+  const handlePhoneChange = (e) => {
+    let rawDigits = e.target.value.replace(/\D/g, '');
+    if (rawDigits.startsWith('91') && rawDigits.length > 10) {
+      rawDigits = rawDigits.slice(2);
+    } else if (rawDigits.startsWith('0') && rawDigits.length > 10) {
+      rawDigits = rawDigits.slice(1);
+    }
+    rawDigits = rawDigits.slice(0, 10);
+    setFormData((prev) => ({ ...prev, phone: rawDigits }));
+    if (rawDigits.length === 10) {
+      setErrorMsg('');
+    }
+  };
+
+  const handlePhoneKeyDown = (e) => {
+    if (['Backspace', 'Delete', 'ArrowLeft', 'ArrowRight', 'Tab', 'Enter', 'Home', 'End'].includes(e.key)) return;
+    if ((e.ctrlKey || e.metaKey) && ['a', 'c', 'v', 'x', 'z'].includes(e.key.toLowerCase())) return;
+    if (e.key === ' ' || e.code === 'Space') {
+      e.preventDefault();
+      return;
+    }
+    if (e.key === '+') {
+      e.preventDefault();
+      return;
+    }
+    if (!/^\d$/.test(e.key)) {
+      e.preventDefault();
+      return;
+    }
+    const input = e.target;
+    const hasSelection = input.selectionStart !== input.selectionEnd;
+    if (formData.phone.length >= 10 && !hasSelection) {
+      e.preventDefault();
+    }
+  };
+
+  const handlePhonePaste = (e) => {
+    e.preventDefault();
+    const pasteText = (e.clipboardData || window.clipboardData).getData('text') || '';
+    let cleaned = pasteText.replace(/\D/g, '');
+    if (cleaned.startsWith('91') && cleaned.length > 10) {
+      cleaned = cleaned.slice(2);
+    } else if (cleaned.startsWith('0') && cleaned.length > 10) {
+      cleaned = cleaned.slice(1);
+    }
+    cleaned = cleaned.slice(0, 10);
+    setFormData((prev) => ({ ...prev, phone: cleaned }));
+    if (cleaned.length === 10) {
+      setErrorMsg('');
+    }
+  };
+
+  const validatePhone = (digits) => {
+    if (!digits || digits.length !== 10) return false;
+    if (!/^[6-9]\d{9}$/.test(digits)) return false;
+    if (/^(\d)\1{9}$/.test(digits)) return false;
+    return true;
+  };
+
   const handleSubmit = (e) => {
     e.preventDefault();
     if (!formData.clientName.trim() || !formData.phone.trim() || !formData.eventDate) {
-      setErrorMsg('Kindly bestow the Patron Name, Contact Line, and Auspicious Celebration Date.');
+      setErrorMsg('Kindly provide the Patron Name, Contact Line, and Auspicious Celebration Date.');
+      return;
+    }
+
+    // Strict 10-digit validation
+    if (!formData.phone || formData.phone.length < 10) {
+      setErrorMsg('Phone number must be exactly 10 digits. Numbers with less than 10 digits cannot be accepted.');
+      return;
+    }
+    if (formData.phone.length !== 10) {
+      setErrorMsg('Please enter an exact 10-digit mobile number.');
+      return;
+    }
+    if (!validatePhone(formData.phone)) {
+      setErrorMsg('Please enter a valid 10-digit Indian mobile number starting with 6, 7, 8, or 9 (dummy/repetitive numbers not accepted).');
       return;
     }
 
@@ -56,7 +132,7 @@ export default function RoyalInvitationBookingPage({ initialOccasion = '', onBac
       guestCount: formData.guestCount,
       city: formData.city,
       status: 'Farmaan Bestowed',
-      notes: formData.customNotes || 'Submitted via Royal Wedding Card Booking Experience.'
+      notes: formData.customNotes || 'Submitted via Royal Celebration Invitation.'
     };
 
     if (onLeadCreated) {
@@ -94,36 +170,26 @@ export default function RoyalInvitationBookingPage({ initialOccasion = '', onBac
 
         <div className="flex items-center gap-2">
           <span className="font-serif text-sm tracking-wider text-[#C9A86A] font-normal italic">
-            Atelier Privé
+            Royal Celebration Farmaan
           </span>
         </div>
-
-        <a
-          href={`tel:${BRAND_INFO.contacts[0].phone}`}
-          className="text-[11px] font-sans tracking-[0.18em] uppercase text-[#8A7E6D] hover:text-[#1A1A1A] font-medium hidden sm:inline transition-colors"
-        >
-          Concierge: {BRAND_INFO.contacts[0].phoneDisplay}
-        </a>
       </div>
 
-      {/* The Masterpiece: High-GSM Gold & Ivory Wedding Card / Royal Farmaan */}
-      <div className="w-full max-w-3xl bg-[#FFFEF9] rounded-2xl border border-[#E9DCC0] shadow-[0_20px_60px_-25px_rgba(40,30,20,0.14)] p-7 sm:p-14 md:p-16 relative my-auto z-10">
-        
-        {/* Delicate Inner Hairline Gold Foil Border */}
-        <div className="absolute inset-3 sm:inset-4 border border-[#C9A86A]/35 rounded-xl pointer-events-none" />
+      {/* Main Luxury Invitation Card Envelope */}
+      <div className="w-full max-w-3xl bg-[#FFFDF9] border border-[#C9A86A]/50 rounded-xl sm:rounded-2xl p-6 sm:p-12 shadow-[0_20px_60px_-15px_rgba(201,168,106,0.18)] relative z-10 box-border">
 
-        {/* 4 Corner Refined Diamond Filigree Accents */}
-        <div className="absolute top-2.5 sm:top-3.5 left-2.5 sm:left-3.5 w-2 h-2 rotate-45 border border-[#C9A86A] bg-[#FFFEF9]" />
-        <div className="absolute top-2.5 sm:top-3.5 right-2.5 sm:right-3.5 w-2 h-2 rotate-45 border border-[#C9A86A] bg-[#FFFEF9]" />
-        <div className="absolute bottom-2.5 sm:bottom-3.5 left-2.5 sm:left-3.5 w-2 h-2 rotate-45 border border-[#C9A86A] bg-[#FFFEF9]" />
-        <div className="absolute bottom-2.5 sm:bottom-3.5 right-2.5 sm:right-3.5 w-2 h-2 rotate-45 border border-[#C9A86A] bg-[#FFFEF9]" />
+        {/* Traditional Gold Filigree Corner Accents */}
+        <div className="absolute top-3 left-3 w-4 h-4 border-t-2 border-l-2 border-[#C9A86A]/60" />
+        <div className="absolute top-3 right-3 w-4 h-4 border-t-2 border-r-2 border-[#C9A86A]/60" />
+        <div className="absolute bottom-3 left-3 w-4 h-4 border-b-2 border-l-2 border-[#C9A86A]/60" />
+        <div className="absolute bottom-3 right-3 w-4 h-4 border-b-2 border-r-2 border-[#C9A86A]/60" />
 
-        {/* Card Header — Wedding Invitation Style */}
-        <div className="text-center max-w-lg mx-auto mb-10 pt-2">
+        {/* Card Header — Farmaan Style */}
+        <div className="text-center max-w-xl mx-auto mb-10 pt-2">
           
           <div className="inline-flex items-center gap-2 text-[#C9A86A] text-[10px] font-sans tracking-[0.3em] uppercase font-semibold mb-3">
             <Sparkles className="w-3 h-3 text-[#C9A86A]" />
-            <span>Private Atelier Farmaan</span>
+            <span>Royal Celebration Farmaan</span>
             <Sparkles className="w-3 h-3 text-[#C9A86A]" />
           </div>
 
@@ -136,7 +202,7 @@ export default function RoyalInvitationBookingPage({ initialOccasion = '', onBac
               SHREE RAM
             </span>
             <span className="text-[9px] uppercase tracking-[0.28em] text-[#8A7E6D] mt-0.5">
-              Atelier & Destination Estates · Bhilai
+              Weddings, Royal Decor & 5-Star Catering · Bhilai
             </span>
           </div>
 
@@ -151,8 +217,9 @@ export default function RoyalInvitationBookingPage({ initialOccasion = '', onBac
             <div className="h-px w-14 bg-[#E9DCC0]" />
           </div>
 
-          <p className="font-serif text-sm sm:text-base italic text-[#6B6255] leading-relaxed max-w-md mx-auto">
-            With highest honor, we invite you to register your auspicious celebration dates and bespoke hospitality requirements in our royal ledger.
+          {/* User's Favorite Line */}
+          <p className="font-serif text-base sm:text-lg italic text-[#2D2823] leading-relaxed max-w-lg mx-auto">
+            “Whether an expansive starlit lawn or a grand banquet hall — we transform your chosen venue with majestic mandap architecture, 5-star Awadhi royal catering, and flawless on-ground execution.”
           </p>
         </div>
 
@@ -200,7 +267,7 @@ export default function RoyalInvitationBookingPage({ initialOccasion = '', onBac
                 onClick={onBack}
                 className="w-full sm:w-auto inline-flex items-center justify-center px-8 py-4 rounded-md text-[11px] font-sans tracking-[0.22em] uppercase font-medium border border-[#E9DCC0] text-[#1A1A1A] hover:border-[#C9A86A] hover:bg-[#FFFBF0] transition-all cursor-pointer"
               >
-                <span>Return to Atelier</span>
+                <span>Return to Homepage</span>
               </button>
             </div>
           </div>
@@ -216,20 +283,16 @@ export default function RoyalInvitationBookingPage({ initialOccasion = '', onBac
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-5 sm:gap-6">
               
-              {/* 1. Auspicious Occasion */}
+              {/* 1. Auspicious Celebration */}
               <div>
                 <label className="block text-[10.5px] font-sans uppercase tracking-[0.22em] text-[#8A7E6D] font-medium mb-2">
                   1. Auspicious Celebration
                 </label>
-                <select
+                <CustomSelect
                   value={formData.occasion}
-                  onChange={(e) => setFormData({ ...formData, occasion: e.target.value })}
-                  className="w-full px-4 py-3.5 sm:py-4 rounded-md border border-[#E9DCC0] bg-[#FFFEF9] text-[15px] font-serif text-[#1A1A1A] outline-none focus:border-[#C9A86A] focus:ring-1 focus:ring-[#C9A86A]/20 transition-all cursor-pointer"
-                >
-                  {occasions.map((occ) => (
-                    <option key={occ} value={occ}>{occ}</option>
-                  ))}
-                </select>
+                  onChange={(val) => setFormData({ ...formData, occasion: val })}
+                  options={occasions}
+                />
               </div>
 
               {/* 2. Auspicious Date */}
@@ -237,12 +300,9 @@ export default function RoyalInvitationBookingPage({ initialOccasion = '', onBac
                 <label className="block text-[10.5px] font-sans uppercase tracking-[0.22em] text-[#8A7E6D] font-medium mb-2">
                   2. Auspicious Date
                 </label>
-                <input
-                  type="date"
+                <CustomDatePicker
                   value={formData.eventDate}
-                  onChange={(e) => setFormData({ ...formData, eventDate: e.target.value })}
-                  className="w-full px-4 py-3.5 sm:py-4 rounded-md border border-[#E9DCC0] bg-[#FFFEF9] text-[15px] font-serif text-[#1A1A1A] outline-none focus:border-[#C9A86A] focus:ring-1 focus:ring-[#C9A86A]/20 transition-all cursor-pointer"
-                  required
+                  onChange={(val) => setFormData({ ...formData, eventDate: val })}
                 />
               </div>
 
@@ -253,10 +313,10 @@ export default function RoyalInvitationBookingPage({ initialOccasion = '', onBac
                 </label>
                 <input
                   type="text"
-                  placeholder="e.g. Thakur Vishal Singh & Family"
+                  placeholder="e.g. Khurana Family"
                   value={formData.clientName}
                   onChange={(e) => setFormData({ ...formData, clientName: e.target.value })}
-                  className="w-full px-4 py-3.5 sm:py-4 rounded-md border border-[#E9DCC0] bg-[#FFFEF9] text-[15px] font-serif text-[#1A1A1A] placeholder:text-[#C7BEAF] outline-none focus:border-[#C9A86A] focus:ring-1 focus:ring-[#C9A86A]/20 transition-all"
+                  className="w-full px-4 py-3.5 sm:py-4 rounded-md border border-[#E9DCC0] bg-[#FFFEF9] text-[15px] font-serif text-[#1A1A1A] placeholder:text-[#C7BEAF] outline-none focus:border-[#C9A86A] focus:ring-1 focus:ring-[#C9A86A]/20 transition-all shadow-2xs"
                   required
                 />
               </div>
@@ -268,10 +328,17 @@ export default function RoyalInvitationBookingPage({ initialOccasion = '', onBac
                 </label>
                 <input
                   type="tel"
-                  placeholder="+91 70003 42216"
+                  inputMode="numeric"
+                  pattern="[0-9]{10}"
+                  minLength={10}
+                  maxLength={10}
+                  autoComplete="tel-national"
+                  placeholder="9826142216"
                   value={formData.phone}
-                  onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                  className="w-full px-4 py-3.5 sm:py-4 rounded-md border border-[#E9DCC0] bg-[#FFFEF9] text-[15px] font-serif text-[#1A1A1A] placeholder:text-[#C7BEAF] outline-none focus:border-[#C9A86A] focus:ring-1 focus:ring-[#C9A86A]/20 transition-all"
+                  onChange={handlePhoneChange}
+                  onKeyDown={handlePhoneKeyDown}
+                  onPaste={handlePhonePaste}
+                  className="w-full px-4 py-3.5 sm:py-4 rounded-md border border-[#E9DCC0] bg-[#FFFEF9] text-[15px] font-sans text-[#1A1A1A] placeholder:text-[#C7BEAF] outline-none focus:border-[#C9A86A] focus:ring-1 focus:ring-[#C9A86A]/20 transition-all tracking-widest font-medium shadow-2xs"
                   required
                 />
               </div>
@@ -281,15 +348,11 @@ export default function RoyalInvitationBookingPage({ initialOccasion = '', onBac
                 <label className="block text-[10.5px] font-sans uppercase tracking-[0.22em] text-[#8A7E6D] font-medium mb-2">
                   5. Estimated Assembly
                 </label>
-                <select
+                <CustomSelect
                   value={formData.guestCount}
-                  onChange={(e) => setFormData({ ...formData, guestCount: e.target.value })}
-                  className="w-full px-4 py-3.5 sm:py-4 rounded-md border border-[#E9DCC0] bg-[#FFFEF9] text-[15px] font-serif text-[#1A1A1A] outline-none focus:border-[#C9A86A] focus:ring-1 focus:ring-[#C9A86A]/20 transition-all cursor-pointer"
-                >
-                  {guestCounts.map((g) => (
-                    <option key={g} value={g}>{g}</option>
-                  ))}
-                </select>
+                  onChange={(val) => setFormData({ ...formData, guestCount: val })}
+                  options={guestCounts}
+                />
               </div>
 
               {/* 6. City / Venue Location */}
@@ -297,15 +360,11 @@ export default function RoyalInvitationBookingPage({ initialOccasion = '', onBac
                 <label className="block text-[10.5px] font-sans uppercase tracking-[0.22em] text-[#8A7E6D] font-medium mb-2">
                   6. Celebration City / Venue
                 </label>
-                <select
+                <CustomSelect
                   value={formData.city}
-                  onChange={(e) => setFormData({ ...formData, city: e.target.value })}
-                  className="w-full px-4 py-3.5 sm:py-4 rounded-md border border-[#E9DCC0] bg-[#FFFEF9] text-[15px] font-serif text-[#1A1A1A] outline-none focus:border-[#C9A86A] focus:ring-1 focus:ring-[#C9A86A]/20 transition-all cursor-pointer"
-                >
-                  {cities.map((c) => (
-                    <option key={c} value={c}>{c}</option>
-                  ))}
-                </select>
+                  onChange={(val) => setFormData({ ...formData, city: val })}
+                  options={cities}
+                />
               </div>
 
             </div>
@@ -313,14 +372,14 @@ export default function RoyalInvitationBookingPage({ initialOccasion = '', onBac
             {/* Custom Celebration Vision / Notes */}
             <div>
               <label className="block text-[10.5px] font-sans uppercase tracking-[0.22em] text-[#8A7E6D] font-medium mb-2">
-                Special Vision or Specific Requirements (Bespoke Themes, Live Counters, Celebrity Entries)
+                Special Vision or Specific Requirements (Bespoke Themes, Live Counters, Royal Entries)
               </label>
               <textarea
                 rows={3}
-                placeholder="Describe any dream setup, pure-ghee Awadhi menu desires, or thematic mandap architecture..."
+                placeholder="Describe your venue vision, pure-ghee Awadhi menu desires, or any specific family traditions..."
                 value={formData.customNotes}
                 onChange={(e) => setFormData({ ...formData, customNotes: e.target.value })}
-                className="w-full px-4 py-3.5 rounded-md border border-[#E9DCC0] bg-[#FFFEF9] text-[15px] font-serif text-[#1A1A1A] placeholder:text-[#C7BEAF] outline-none focus:border-[#C9A86A] focus:ring-1 focus:ring-[#C9A86A]/20 transition-all resize-none"
+                className="w-full px-4 py-3.5 rounded-md border border-[#E9DCC0] bg-[#FFFEF9] text-[15px] font-serif text-[#1A1A1A] placeholder:text-[#C7BEAF] outline-none focus:border-[#C9A86A] focus:ring-1 focus:ring-[#C9A86A]/20 transition-all resize-none shadow-2xs"
               />
             </div>
 
@@ -334,9 +393,8 @@ export default function RoyalInvitationBookingPage({ initialOccasion = '', onBac
                 <span>Seal & Bestow Royal Farmaan</span>
               </button>
               
-              <div className="flex items-center justify-center gap-2 mt-4 text-[11px] text-[#8A7E6D]">
-                <ShieldCheck className="w-3.5 h-3.5 text-[#C9A86A]" />
-                <span>100% Confidential. Directly delivered to the private desks of Vishal Pratap Singh, Amitab Verma & Chhatrapal.</span>
+              <div className="mt-4 text-xs text-[#8A7E6D] font-light text-center">
+                Bespoke celebration management tailored with highest honor, personal warmth, and flawless execution.
               </div>
             </div>
 
@@ -347,7 +405,7 @@ export default function RoyalInvitationBookingPage({ initialOccasion = '', onBac
 
       {/* Footer Credo */}
       <div className="text-center mt-8 text-[10px] font-sans text-[#9A8C77] tracking-[0.25em] uppercase relative z-10">
-        <span>Shree Ram Events & Catering Atelier · Bhilai, Chhattisgarh</span>
+        <span>Shree Ram Events & Royal Catering · Bhilai · Raipur · Chhattisgarh</span>
       </div>
 
     </div>

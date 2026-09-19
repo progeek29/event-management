@@ -229,51 +229,55 @@ export const SHOWCASE_PORTFOLIO = [
   }
 ];
 
-// Initial Confidential Admin Leads
+// Initial Royal Farmaan Inquiries
 export const INITIAL_LEADS = [
   {
     id: "SRE-2026-001",
-    dateSubmitted: "2026-09-15 14:30",
-    clientName: "Rajeshwar Sharma",
-    phone: "+91 98261 98765",
-    occasion: "Wedding Ceremonies",
+    dateSubmitted: "18 Sep 2026, 02:30 PM",
+    clientName: "Khurana Family",
+    phone: "9826198765",
+    occasion: "Royal Wedding & Mandap Setup",
     eventDate: "2026-11-28",
-    guestCount: 850,
-    status: "Confirmed",
-    notes: "Heritage Ivory & Brass mandap. Awadhi banquet and live chaat street requested."
+    guestCount: "600 - 1,500+ Guests (Sprawling Lawn Gala)",
+    city: "Bhilai / Durg",
+    status: "Date Confirmed",
+    notes: "Heritage Ivory & Brass mandap. Awadhi royal banquet and live chaat street requested."
   },
   {
     id: "SRE-2026-002",
-    dateSubmitted: "2026-09-15 17:15",
-    clientName: "Pooja Agrawal",
-    phone: "+91 94252 12345",
-    occasion: "Engagement & Receptions",
+    dateSubmitted: "18 Sep 2026, 05:15 PM",
+    clientName: "Pooja Agrawal & Family",
+    phone: "9425212345",
+    occasion: "Engagement & Sangeet Gala",
     eventDate: "2026-12-04",
-    guestCount: 300,
-    status: "Contacted",
-    notes: "25th Anniversary celebration. Intimate candlelit cabana and live acoustic duo."
+    guestCount: "300 - 600 Guests (Grand Royal Banquet)",
+    city: "Raipur",
+    status: "Founder Contacted",
+    notes: "Silver jubilee gala. Intimate candlelit cabana and live royal acoustic troupe."
   },
   {
     id: "SRE-2026-003",
-    dateSubmitted: "2026-09-16 09:45",
+    dateSubmitted: "19 Sep 2026, 09:45 AM",
     clientName: "Vikram Singhania",
-    phone: "+91 97555 67890",
-    occasion: "Corporate & Theme Parties",
+    phone: "9755567890",
+    occasion: "Corporate & Theme Galas",
     eventDate: "2026-10-18",
-    guestCount: 450,
-    status: "New",
-    notes: "Annual corporate gala. Requires stage AV setup and 5-star executive dinner."
+    guestCount: "300 - 600 Guests (Grand Royal Banquet)",
+    city: "Bhilai / Durg",
+    status: "Farmaan Bestowed",
+    notes: "Annual corporate gala. Requires majestic stage AV setup and 5-star executive banquet."
   },
   {
     id: "SRE-2026-004",
-    dateSubmitted: "2026-09-16 11:05",
-    clientName: "Ananya Mishra",
-    phone: "+91 89820 54321",
-    occasion: "Wedding Ceremonies",
+    dateSubmitted: "19 Sep 2026, 11:05 AM",
+    clientName: "Ananya Mishra & Family",
+    phone: "8982054321",
+    occasion: "Royal Wedding & Mandap Setup",
     eventDate: "2026-12-19",
-    guestCount: 650,
-    status: "New",
-    notes: "Full wedding production and grand entrance in Raipur."
+    guestCount: "600 - 1,500+ Guests (Sprawling Lawn Gala)",
+    city: "Raipur",
+    status: "Farmaan Bestowed",
+    notes: "Full royal wedding production, regal floral mandap, and grand bridal entrance in Raipur."
   }
 ];
 

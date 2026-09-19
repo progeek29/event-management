@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { MessageSquare, ArrowRight, X, Calendar } from 'lucide-react';
 import { BRAND_INFO } from '../data/initialData';
+import housewarmingImg from '../assets/housewarming_event.jpg';
 
 const PHOTO_STORIES = [
   {
@@ -29,19 +30,19 @@ const PHOTO_STORIES = [
   },
   {
     id: 'story-4',
-    theme: 'Devotion To Craft',
-    title: 'Every Little Detail Matters',
-    caption: 'Auspicious mehendi motifs, ancestral polki, and hand-woven silk.',
-    image: '/events/every-detail-matters.jpg',
-    dialogue: 'Sacred symbols etched in henna, heirloom jewelry, and fragrant marigolds — true luxury is quiet, deliberate, and deeply revered.'
+    theme: 'Corporate Galas',
+    title: 'Executive Summits & Brand Galas',
+    caption: 'Immaculate staging, synchronized acoustics, and gourmet banquet hospitality.',
+    image: 'https://images.unsplash.com/photo-1511578314322-379afb476865?q=80&w=1200&auto=format&fit=crop',
+    dialogue: 'From high-level executive summits to grand corporate anniversary galas in Bhilai, Raipur, and Durg — immaculate staging, synchronized acoustics, and seamless 5-star hospitality.'
   },
   {
     id: 'story-5',
-    theme: 'The Atelier',
-    title: 'Remembered Beautifully',
-    caption: 'Candid, cinematic, and emotional storytelling for a lifetime.',
-    image: '/events/timeless-stories-editorial.jpg',
-    dialogue: 'Grand mandap architecture, 40,000 sq.ft lawns, and 5-star royal catering — so you can simply immerse in sacred joy.'
+    theme: 'Housewarming Party',
+    title: 'Warmth of a Sacred Abode',
+    caption: 'Traditional havan setups, auspicious floral doorways, and heartfelt family feasts.',
+    image: '/events/housewarming_event.jpg',
+    dialogue: 'Blessing your new residence with sacred Vedic rituals, fragrant marigold torans, intimate courtyard seating, and pure celebratory dining.'
   }
 ];
 
@@ -70,7 +71,7 @@ export default function EditorialStorySection({ onNavigateToReservation }) {
 
           <h2 className="section-title">
             Marriage Is a Sacred Union. <br />
-            <span className="font-serif italic font-light text-[#8C7355]">A Love Story in Five Frames.</span>
+            <span className="font-serif italic font-light text-[#8C7355]">Cherished Moments of Union.</span>
           </h2>
 
           <div className="section-divider" />
@@ -137,6 +138,9 @@ export default function EditorialStorySection({ onNavigateToReservation }) {
                     src={story.image}
                     alt={story.title}
                     loading="lazy"
+                    onError={(e) => {
+                      if (story.id === 'story-5') e.currentTarget.src = housewarmingImg;
+                    }}
                   />
                   <div className="absolute top-3 left-3">
                     <span className="text-[9px] uppercase tracking-[0.2em] px-3 py-1 rounded-full bg-white/95 text-[#1C1A18] font-semibold backdrop-blur-xs shadow-xs">
@@ -192,7 +196,7 @@ export default function EditorialStorySection({ onNavigateToReservation }) {
               className="w-full sm:w-auto btn-pill-outline bg-white"
             >
               <MessageSquare className="w-3.5 h-3.5 text-[#8C7355]" />
-              <span>WhatsApp Direct</span>
+              <span>WhatsApp</span>
             </a>
           </div>
         </div>
@@ -217,10 +221,13 @@ export default function EditorialStorySection({ onNavigateToReservation }) {
                 src={activeStory.image}
                 alt={activeStory.title}
                 className="w-full h-full object-cover"
+                onError={(e) => {
+                  e.currentTarget.src = housewarmingImg;
+                }}
               />
               <div className="absolute top-4 left-4">
                 <span className="text-[10px] uppercase tracking-[0.22em] px-3.5 py-1 rounded-full bg-white/95 text-[#1C1A18] font-semibold">
-                  {story_theme_safe(activeStory.theme)}
+                  {activeStory.theme}
                 </span>
               </div>
             </div>

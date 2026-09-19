@@ -31,10 +31,58 @@ export default function BookingForm({ onLeadCreated, initialOccasion = '' }) {
     '600 - 1,200+ Guests (Imperial Royal)'
   ];
 
+  const handlePhoneChange = (e) => {
+    let raw = e.target.value.replace(/\D/g, '');
+    if (raw.startsWith('91') && raw.length > 10) raw = raw.slice(2);
+    else if (raw.startsWith('0') && raw.length > 10) raw = raw.slice(1);
+    raw = raw.slice(0, 10);
+    setFormData((prev) => ({ ...prev, phone: raw }));
+    if (raw.length === 10) setErrorMsg('');
+  };
+
+  const handlePhoneKeyDown = (e) => {
+    if (['Backspace', 'Delete', 'ArrowLeft', 'ArrowRight', 'Tab', 'Enter', 'Home', 'End'].includes(e.key)) return;
+    if ((e.ctrlKey || e.metaKey) && ['a', 'c', 'v', 'x', 'z'].includes(e.key.toLowerCase())) return;
+    if (e.key === ' ' || e.code === 'Space') {
+      e.preventDefault();
+      return;
+    }
+    if (!/^\d$/.test(e.key)) {
+      e.preventDefault();
+      return;
+    }
+    const input = e.target;
+    const hasSelection = input.selectionStart !== input.selectionEnd;
+    if (formData.phone.length >= 10 && !hasSelection) {
+      e.preventDefault();
+    }
+  };
+
+  const handlePhonePaste = (e) => {
+    e.preventDefault();
+    const pasteText = (e.clipboardData || window.clipboardData).getData('text') || '';
+    let raw = pasteText.replace(/\D/g, '');
+    if (raw.startsWith('91') && raw.length > 10) raw = raw.slice(2);
+    else if (raw.startsWith('0') && raw.length > 10) raw = raw.slice(1);
+    raw = raw.slice(0, 10);
+    setFormData((prev) => ({ ...prev, phone: raw }));
+    if (raw.length === 10) setErrorMsg('');
+  };
+
   const handleSubmit = (e) => {
     e.preventDefault();
     if (!formData.clientName.trim() || !formData.phone.trim() || !formData.eventDate) {
       setErrorMsg('Kindly provide your Full Name, Contact Number, and Tentative Event Date.');
+      return;
+    }
+
+    if (formData.phone.length !== 10) {
+      setErrorMsg('Please enter an exact 10-digit mobile number. Numbers with less than 10 digits cannot be accepted.');
+      return;
+    }
+
+    if (!/^[6-9]\d{9}$/.test(formData.phone)) {
+      setErrorMsg('Please enter a valid 10-digit Indian mobile number starting with 6, 7, 8, or 9.');
       return;
     }
 
@@ -97,7 +145,7 @@ export default function BookingForm({ onLeadCreated, initialOccasion = '' }) {
                   Inquiry Received with Honor
                 </h3>
                 <p className="text-xs sm:text-sm text-[#5A6472] max-w-md mx-auto leading-relaxed">
-                  Thank you, <span className="text-[#0D1B2A] font-semibold">{formData.clientName}</span>. Your inquiry for <span className="text-[#8C6B38] font-medium">{formData.occasion}</span> on <span className="font-semibold">{formData.eventDate}</span> has been privately logged. Our founders will contact you shortly at <span className="font-semibold">{formData.phone}</span>.
+                  Thank you, <span className="text-[#0D1B2A] font-semibold">{formData.clientName}</span>. Your inquiry for <span className="text-[#8C6B38] font-medium">{formData.occasion}</span> on <span className="font-semibold">{formData.eventDate}</span> has been privately logged. Our founders will contact you shortly at <span className="font-semibold text-[#0D1B2A]">{formData.phone}</span>.
                 </p>
               </div>
 
@@ -190,14 +238,22 @@ export default function BookingForm({ onLeadCreated, initialOccasion = '' }) {
                       className="w-full px-4 py-3 rounded-xl border border-[#C5A880]/40 bg-[#FAF8F5] text-xs text-[#0D1B2A] placeholder-[#8E98A5] focus:outline-none focus:border-[#0D1B2A] transition-colors"
                       required
                     />
-                    <input
-                      type="tel"
-                      placeholder="Mobile / WhatsApp"
-                      value={formData.phone}
-                      onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                      className="w-full px-4 py-3 rounded-xl border border-[#C5A880]/40 bg-[#FAF8F5] text-xs text-[#0D1B2A] placeholder-[#8E98A5] focus:outline-none focus:border-[#0D1B2A] transition-colors"
-                      required
-                    />
+                    <div>
+                      <input
+                        type="tel"
+                        inputMode="numeric"
+                        pattern="[0-9]{10}"
+                        minLength={10}
+                        maxLength={10}
+                        placeholder="9826142216"
+                        value={formData.phone}
+                        onChange={handlePhoneChange}
+                        onKeyDown={handlePhoneKeyDown}
+                        onPaste={handlePhonePaste}
+                        className="w-full px-4 py-3 rounded-xl border border-[#C5A880]/40 bg-[#FAF8F5] text-xs text-[#0D1B2A] placeholder-[#8E98A5] focus:outline-none focus:border-[#0D1B2A] transition-colors tracking-widest font-medium"
+                        required
+                      />
+                    </div>
                   </div>
                 </div>
 
@@ -212,9 +268,6 @@ export default function BookingForm({ onLeadCreated, initialOccasion = '' }) {
                   <span>Request Bespoke Consultation</span>
                   <ArrowRight className="w-4 h-4 text-[#C5A880]" />
                 </button>
-                <p className="text-[11px] text-[#8E98A5] text-center mt-3 tracking-wide">
-                  Your contact details are strictly confidential and only accessed by our founders.
-                </p>
               </div>
 
             </form>
