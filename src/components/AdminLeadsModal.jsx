@@ -2,7 +2,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import { 
   X, Lock, Download, Phone, MessageSquare, 
   Trash2, Plus, Eye, EyeOff, Search, Sparkles, Calendar, Clock, CheckCircle2,
-  ChevronDown, Check, ArrowLeft
+  ChevronDown, Check, ArrowLeft, Edit3, ImagePlus
 } from 'lucide-react';
 import * as XLSX from 'xlsx';
 
@@ -139,8 +139,11 @@ export default function AdminLeadsModal({
   onDeleteLead, 
   financials = [],
   onAddFinancialRecord,
+  onUpdateFinancialRecord,
+  onDeleteFinancialRecord,
   services = [],
-  onUpdateService
+  onUpdateService,
+  onAddService
 }) {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [adminId, setAdminId] = useState('');
@@ -152,8 +155,10 @@ export default function AdminLeadsModal({
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState('All');
   
-  // New financial form modal state
+  // Financial CRUD State
+  const [finSearchTerm, setFinSearchTerm] = useState('');
   const [showAddFinance, setShowAddFinance] = useState(false);
+  const [editingFinRecord, setEditingFinRecord] = useState(null);
   const [newFin, setNewFin] = useState({
     clientName: '',
     eventName: '',
@@ -161,7 +166,17 @@ export default function AdminLeadsModal({
     advancePaid: '',
     decorExpense: '',
     cateringExpense: '',
+    otherExpense: '',
     paymentStatus: 'Advance Received'
+  });
+
+  // Offerings CRUD state
+  const [showAddService, setShowAddService] = useState(false);
+  const [newServiceData, setNewServiceData] = useState({
+    title: '',
+    subtitle: '',
+    image: '/events/wedding_stage_decor.png',
+    description: ''
   });
 
   if (!isOpen) return null;
@@ -227,6 +242,7 @@ export default function AdminLeadsModal({
       'Balance Due (INR)': fin.balanceDue,
       'Decor Outlay (INR)': fin.decorExpense,
       'Catering Outlay (INR)': fin.cateringExpense,
+      'Other Outlay (INR)': fin.otherExpense || 0,
       'Est Net Margin (INR)': fin.contractValue - (fin.decorExpense + fin.cateringExpense + (fin.otherExpense || 0)),
       'Status': fin.paymentStatus
     }));
@@ -243,6 +259,7 @@ export default function AdminLeadsModal({
     const advance = Number(newFin.advancePaid) || 0;
     const decor = Number(newFin.decorExpense) || 0;
     const catering = Number(newFin.cateringExpense) || 0;
+    const other = Number(newFin.otherExpense) || 0;
 
     const record = {
       id: `FIN-${Date.now().toString().slice(-4)}`,
@@ -253,11 +270,13 @@ export default function AdminLeadsModal({
       balanceDue: Math.max(0, contract - advance),
       decorExpense: decor,
       cateringExpense: catering,
-      otherExpense: 0,
+      otherExpense: other,
       paymentStatus: newFin.paymentStatus
     };
 
-    onAddFinancialRecord(record);
+    if (onAddFinancialRecord) {
+      onAddFinancialRecord(record);
+    }
     setShowAddFinance(false);
     setNewFin({
       clientName: '',
@@ -266,7 +285,57 @@ export default function AdminLeadsModal({
       advancePaid: '',
       decorExpense: '',
       cateringExpense: '',
+      otherExpense: '',
       paymentStatus: 'Advance Received'
+    });
+  };
+
+  const handleUpdateFinance = (e) => {
+    e.preventDefault();
+    if (!editingFinRecord) return;
+
+    const contract = Number(editingFinRecord.contractValue) || 0;
+    const advance = Number(editingFinRecord.advancePaid) || 0;
+    const decor = Number(editingFinRecord.decorExpense) || 0;
+    const catering = Number(editingFinRecord.cateringExpense) || 0;
+    const other = Number(editingFinRecord.otherExpense) || 0;
+
+    const updated = {
+      ...editingFinRecord,
+      contractValue: contract,
+      advancePaid: advance,
+      balanceDue: Math.max(0, contract - advance),
+      decorExpense: decor,
+      cateringExpense: catering,
+      otherExpense: other
+    };
+
+    if (onUpdateFinancialRecord) {
+      onUpdateFinancialRecord(updated);
+    }
+    setEditingFinRecord(null);
+  };
+
+  const handleCreateServiceSubmit = (e) => {
+    e.preventDefault();
+    if (!newServiceData.title.trim()) return;
+    const newSrv = {
+      id: `SRV-${Date.now().toString().slice(-4)}`,
+      number: String(services.length + 1).padStart(2, '0'),
+      title: newServiceData.title,
+      subtitle: newServiceData.subtitle || 'Bespoke Experience',
+      image: newServiceData.image || '/events/wedding_stage_decor.png',
+      description: newServiceData.description || 'Curated royal hospitality and production by Shree Ram Events.'
+    };
+    if (onAddService) {
+      onAddService(newSrv);
+    }
+    setShowAddService(false);
+    setNewServiceData({
+      title: '',
+      subtitle: '',
+      image: '/events/wedding_stage_decor.png',
+      description: ''
     });
   };
 
@@ -680,10 +749,60 @@ export default function AdminLeadsModal({
               </div>
             )}
 
-            {/* Tab 2: Private Financials Ledger View (Gold & Ivory) */}
+            {/* Tab 2: Private Financials Ledger View (Full CRUD) */}
             {activeTab === 'financials' && (
               <div className="flex-1 overflow-y-auto p-4 sm:p-6 space-y-6">
                 
+                {/* Financial Ledger Toolbar */}
+                <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 bg-[#FFFDF9] border border-[#E9DCC0] p-4 rounded-xl shadow-2xs">
+                  <div>
+                    <h3 className="font-serif text-lg sm:text-xl text-[#1A1A1A] flex items-center gap-2 m-0">
+                      <span>Event Financial Ledger (Hisaab-Kitab)</span>
+                      <span className="text-[10.5px] font-sans px-2 py-0.5 rounded-full bg-[#FAF4E6] text-[#8C6B28] border border-[#E2D1A6] font-semibold">
+                        {financials.length} Events
+                      </span>
+                    </h3>
+                    <p className="text-xs text-[#7A7266] m-0 mt-0.5">
+                      Track client contracts, advance tokens, vendor expenses (Decor & Food), balance dues, and real profit margins.
+                    </p>
+                  </div>
+
+                  <div className="flex flex-wrap items-center gap-2.5">
+                    {/* Search in Ledger */}
+                    <div className="relative">
+                      <Search className="w-3.5 h-3.5 text-[#8A7E6D] absolute left-3 top-1/2 -translate-y-1/2" />
+                      <input
+                        type="text"
+                        placeholder="Search event or client..."
+                        value={finSearchTerm}
+                        onChange={(e) => setFinSearchTerm(e.target.value)}
+                        className="pl-8 pr-3 py-1.5 text-xs bg-[#FAF7F2] border border-[#E9DCC0] rounded-lg text-[#1A1A1A] placeholder-[#8A7E6D] focus:outline-none focus:border-[#C9A86A] w-48 sm:w-56 transition-all"
+                      />
+                    </div>
+
+                    {/* Download Excel */}
+                    <button
+                      type="button"
+                      onClick={exportFinanceToExcel}
+                      className="px-3 py-1.5 rounded-lg border border-[#E9DCC0] bg-[#FAF7F2] hover:bg-[#FAF4E6] text-xs font-sans text-[#1A1A1A] flex items-center gap-1.5 cursor-pointer transition-all shadow-2xs font-medium"
+                      title="Download Excel Sheet"
+                    >
+                      <Download className="w-3.5 h-3.5 text-[#8C6B28]" />
+                      <span className="hidden sm:inline">Export Excel</span>
+                    </button>
+
+                    {/* Create New Entry Button */}
+                    <button
+                      type="button"
+                      onClick={() => setShowAddFinance(true)}
+                      className="px-3.5 py-1.5 rounded-lg bg-[#1A1A1A] hover:bg-[#C9A86A] text-white text-xs font-sans flex items-center gap-1.5 cursor-pointer transition-all shadow-sm font-semibold hover:text-[#1A1A1A]"
+                    >
+                      <Plus className="w-3.5 h-3.5" />
+                      <span>+ Add Event Record</span>
+                    </button>
+                  </div>
+                </div>
+
                 {/* Financial Metric Overview Cards */}
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                   <div className="bg-[#FFFDF9] border border-[#E9DCC0] rounded-xl p-4 shadow-2xs">
@@ -725,53 +844,100 @@ export default function AdminLeadsModal({
 
                 {/* Financial Ledger Table */}
                 <div className="overflow-x-auto border border-[#E9DCC0] rounded-xl bg-[#FFFDF9] shadow-sm">
-                  <table className="w-full text-left border-collapse text-xs">
-                    <thead>
-                      <tr className="bg-[#FAF4E6] text-[#1A1A1A] border-b border-[#E9DCC0]">
-                        <th className="py-3 px-4 font-sans tracking-wider uppercase font-semibold">Event & Client</th>
-                        <th className="py-3 px-4 font-sans tracking-wider uppercase font-semibold">Contract Value</th>
-                        <th className="py-3 px-4 font-sans tracking-wider uppercase font-semibold">Advance Paid</th>
-                        <th className="py-3 px-4 font-sans tracking-wider uppercase font-semibold">Balance Due</th>
-                        <th className="py-3 px-4 font-sans tracking-wider uppercase font-semibold">Vendor Outlays (Decor/Food)</th>
-                        <th className="py-3 px-4 font-sans tracking-wider uppercase font-semibold">Est Net Margin</th>
-                        <th className="py-3 px-4 font-sans tracking-wider uppercase font-semibold">Status</th>
-                      </tr>
-                    </thead>
-                    <tbody className="divide-y divide-[#E9DCC0]/70 text-[#2D2823]">
-                      {financials.map((fin) => {
-                        const net = fin.contractValue - (fin.decorExpense + fin.cateringExpense + (fin.otherExpense || 0));
-                        return (
-                          <tr key={fin.id} className="hover:bg-[#FAF4E6]/60 transition-colors">
-                            <td className="py-3 px-4">
-                              <div className="font-serif font-medium text-[#1A1A1A] text-[13px]">{fin.eventName}</div>
-                              <div className="text-[11px] text-[#8A7E6D]">{fin.clientName}</div>
-                            </td>
-                            <td className="py-3 px-4 font-mono font-medium text-[#1A1A1A]">
-                              ₹{fin.contractValue.toLocaleString('en-IN')}
-                            </td>
-                            <td className="py-3 px-4 font-mono text-[#255241] font-medium">
-                              ₹{fin.advancePaid.toLocaleString('en-IN')}
-                            </td>
-                            <td className="py-3 px-4 font-mono text-[#A26214] font-medium">
-                              ₹{fin.balanceDue.toLocaleString('en-IN')}
-                            </td>
-                            <td className="py-3 px-4 text-[11px] text-[#7A7266]">
-                              <div>Decor: ₹{fin.decorExpense.toLocaleString('en-IN')}</div>
-                              <div>Catering: ₹{fin.cateringExpense.toLocaleString('en-IN')}</div>
-                            </td>
-                            <td className="py-3 px-4 font-mono font-semibold text-[#8C7355]">
-                              ₹{net.toLocaleString('en-IN')}
-                            </td>
-                            <td className="py-3 px-4">
-                              <span className="px-2.5 py-1 rounded-full text-[10.5px] font-sans font-medium bg-[#FAF4E6] border border-[#E9DCC0] text-[#8C7355]">
-                                {fin.paymentStatus}
-                              </span>
-                            </td>
-                          </tr>
-                        );
-                      })}
-                    </tbody>
-                  </table>
+                  {filteredFinancials.length === 0 ? (
+                    <div className="p-8 text-center text-[#8A7E6D]">
+                      <p className="font-serif text-base text-[#1A1A1A] mb-1">No Financial Entries Found</p>
+                      <p className="text-xs">Click "+ Add Event Record" to add an entry to your ledger.</p>
+                    </div>
+                  ) : (
+                    <table className="w-full text-left border-collapse text-xs">
+                      <thead>
+                        <tr className="bg-[#FAF4E6] text-[#1A1A1A] border-b border-[#E9DCC0]">
+                          <th className="py-3 px-4 font-sans tracking-wider uppercase font-semibold">Event & Client</th>
+                          <th className="py-3 px-4 font-sans tracking-wider uppercase font-semibold">Contract Value</th>
+                          <th className="py-3 px-4 font-sans tracking-wider uppercase font-semibold">Advance Paid</th>
+                          <th className="py-3 px-4 font-sans tracking-wider uppercase font-semibold">Balance Due</th>
+                          <th className="py-3 px-4 font-sans tracking-wider uppercase font-semibold">Vendor Outlays (Decor/Food)</th>
+                          <th className="py-3 px-4 font-sans tracking-wider uppercase font-semibold">Est Net Margin</th>
+                          <th className="py-3 px-4 font-sans tracking-wider uppercase font-semibold">Status</th>
+                          <th className="py-3 px-4 font-sans tracking-wider uppercase font-semibold text-right">Actions</th>
+                        </tr>
+                      </thead>
+                      <tbody className="divide-y divide-[#E9DCC0]/70 text-[#2D2823]">
+                        {filteredFinancials.map((fin) => {
+                          const net = Number(fin.contractValue) - (Number(fin.decorExpense || 0) + Number(fin.cateringExpense || 0) + Number(fin.otherExpense || 0));
+                          return (
+                            <tr key={fin.id} className="hover:bg-[#FAF4E6]/60 transition-colors">
+                              <td className="py-3 px-4">
+                                <div className="font-serif font-medium text-[#1A1A1A] text-[13px]">{fin.eventName}</div>
+                                <div className="text-[11px] text-[#8A7E6D]">{fin.clientName}</div>
+                                <span className="text-[9.5px] font-mono text-[#A39688]">{fin.id}</span>
+                              </td>
+                              <td className="py-3 px-4 font-mono font-medium text-[#1A1A1A]">
+                                ₹{Number(fin.contractValue || 0).toLocaleString('en-IN')}
+                              </td>
+                              <td className="py-3 px-4 font-mono text-[#255241] font-medium">
+                                ₹{Number(fin.advancePaid || 0).toLocaleString('en-IN')}
+                              </td>
+                              <td className="py-3 px-4 font-mono text-[#A26214] font-medium">
+                                ₹{Number(fin.balanceDue || 0).toLocaleString('en-IN')}
+                              </td>
+                              <td className="py-3 px-4 text-[11px] text-[#7A7266]">
+                                <div>Decor: ₹{Number(fin.decorExpense || 0).toLocaleString('en-IN')}</div>
+                                <div>Catering: ₹{Number(fin.cateringExpense || 0).toLocaleString('en-IN')}</div>
+                                {Number(fin.otherExpense || 0) > 0 && (
+                                  <div>Other: ₹{Number(fin.otherExpense).toLocaleString('en-IN')}</div>
+                                )}
+                              </td>
+                              <td className="py-3 px-4 font-mono font-semibold text-[#8C7355]">
+                                ₹{net.toLocaleString('en-IN')}
+                              </td>
+                              <td className="py-3 px-4">
+                                <span className={`px-2.5 py-1 rounded-full text-[10.5px] font-sans font-medium border ${
+                                  fin.paymentStatus === 'Fully Paid'
+                                    ? 'bg-[#EBF7EE] text-[#1D6F42] border-[#A7DFBA]'
+                                    : fin.paymentStatus === 'Advance Received'
+                                    ? 'bg-[#FFFBF0] text-[#8C6B28] border-[#E2D1A6]'
+                                    : 'bg-[#FAF4E6] text-[#8C7355] border-[#E9DCC0]'
+                                }`}>
+                                  {fin.paymentStatus}
+                                </span>
+                              </td>
+                              <td className="py-3 px-4 text-right whitespace-nowrap">
+                                <div className="inline-flex items-center gap-1.5">
+                                  {/* Edit Button */}
+                                  <button
+                                    type="button"
+                                    onClick={() => setEditingFinRecord(fin)}
+                                    className="p-1.5 text-[#8C6B28] hover:text-[#1A1A1A] hover:bg-[#FAF4E6] rounded-md transition-colors cursor-pointer"
+                                    title="Edit Financial Record (Update Payments / Expenses)"
+                                  >
+                                    <Edit3 className="w-4 h-4" />
+                                  </button>
+
+                                  {/* Delete Button */}
+                                  <button
+                                    type="button"
+                                    onClick={() => {
+                                      if (window.confirm(`Are you sure you want to delete financial record for "${fin.eventName}" (${fin.clientName})?`)) {
+                                        if (onDeleteFinancialRecord) {
+                                          onDeleteFinancialRecord(fin.id);
+                                        }
+                                      }
+                                    }}
+                                    className="p-1.5 text-[#A39688] hover:text-[#9B2C2C] hover:bg-[#FFF5F5] rounded-md transition-colors cursor-pointer"
+                                    title="Delete Record"
+                                  >
+                                    <Trash2 className="w-4 h-4" />
+                                  </button>
+                                </div>
+                              </td>
+                            </tr>
+                          );
+                        })}
+                      </tbody>
+                    </table>
+                  )}
                 </div>
               </div>
             )}
@@ -779,15 +945,24 @@ export default function AdminLeadsModal({
             {/* TAB 3: Photos & Services Management */}
             {activeTab === 'content' && (
               <div className="p-4 sm:p-6 space-y-6 overflow-y-auto">
-                <div className="flex items-center justify-between">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-[#FFFDF9] border border-[#E9DCC0] p-4 rounded-xl shadow-2xs">
                   <div>
-                    <h4 className="font-serif text-xl text-[#1A1A1A]">
-                      Website Photos & Services Manager
+                    <h4 className="font-serif text-xl text-[#1A1A1A] m-0">
+                      Website Photos & Offerings Manager
                     </h4>
-                    <p className="text-xs text-[#7A7266]">
-                      Admin controls to update photos, titles, and banner visuals across all royal offerings.
+                    <p className="text-xs text-[#7A7266] m-0 mt-0.5">
+                      Admin controls to update photos, titles, and banner visuals across all royal offerings cards.
                     </p>
                   </div>
+
+                  <button
+                    type="button"
+                    onClick={() => setShowAddService(true)}
+                    className="px-3.5 py-1.5 rounded-lg bg-[#1A1A1A] hover:bg-[#C9A86A] text-white text-xs font-sans flex items-center gap-1.5 cursor-pointer transition-all shadow-sm font-semibold hover:text-[#1A1A1A] self-start sm:self-auto"
+                  >
+                    <Plus className="w-3.5 h-3.5" />
+                    <span>+ Add New Offering Card</span>
+                  </button>
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
@@ -798,6 +973,9 @@ export default function AdminLeadsModal({
                           src={srv.image}
                           alt={srv.title}
                           className="w-24 h-24 object-cover rounded-lg border border-[#E9DCC0] flex-shrink-0"
+                          onError={(e) => {
+                            e.target.src = '/events/wedding_stage_decor.png';
+                          }}
                         />
                         <div className="flex-1 min-w-0">
                           <span className="text-[10px] font-sans uppercase tracking-wider text-[#C9A86A] font-bold">
@@ -815,7 +993,7 @@ export default function AdminLeadsModal({
                       <div className="space-y-2 pt-2 border-t border-[#E9DCC0] text-xs">
                         <div>
                           <label className="block text-[10px] uppercase font-bold text-[#8A7E6D] mb-1">
-                            Photo URL / Path
+                            Photo URL / Path (e.g. /events/xyz.png or https://...)
                           </label>
                           <input
                             type="text"
@@ -854,12 +1032,15 @@ export default function AdminLeadsModal({
           </div>
         )}
 
-        {/* Modal: Add New Financial Record */}
+        {/* Modal: Add New Financial Record (Create) */}
         {showAddFinance && (
           <div className="fixed inset-0 z-60 flex items-center justify-center p-4 bg-[#1A1A1A]/70 backdrop-blur-xs">
-            <div className="bg-[#FFFDF9] border border-[#C9A86A] rounded-2xl max-w-lg w-full p-6 shadow-2xl">
+            <div className="bg-[#FFFDF9] border border-[#C9A86A] rounded-2xl max-w-lg w-full p-6 shadow-2xl max-h-[90vh] overflow-y-auto">
               <div className="flex items-center justify-between pb-4 border-b border-[#E9DCC0] mb-4">
-                <h4 className="font-serif text-xl text-[#1A1A1A]">Add Event Ledger Entry</h4>
+                <div>
+                  <h4 className="font-serif text-xl text-[#1A1A1A] m-0">Add Event Ledger Entry</h4>
+                  <p className="text-[11px] text-[#7A7266] m-0">Create new event hisaab-kitab record</p>
+                </div>
                 <button onClick={() => setShowAddFinance(false)} className="text-[#8A7E6D] hover:text-[#1A1A1A] cursor-pointer">
                   <X className="w-5 h-5" />
                 </button>
@@ -871,76 +1052,318 @@ export default function AdminLeadsModal({
                   <input
                     type="text"
                     required
+                    placeholder="e.g., Agrawal Parivaar"
                     value={newFin.clientName}
                     onChange={(e) => setNewFin({ ...newFin, clientName: e.target.value })}
-                    className="w-full px-3 py-2 border border-[#E9DCC0] rounded-md bg-[#FAF7F2]"
+                    className="w-full px-3 py-2 border border-[#E9DCC0] rounded-md bg-[#FAF7F2] text-[#1A1A1A]"
                   />
                 </div>
                 <div>
-                  <label className="block uppercase tracking-wider text-[#8A7E6D] font-semibold mb-1">Event Name</label>
+                  <label className="block uppercase tracking-wider text-[#8A7E6D] font-semibold mb-1">Event Name / Occasion</label>
                   <input
                     type="text"
                     required
+                    placeholder="e.g., Grand Royal Wedding & Reception"
                     value={newFin.eventName}
                     onChange={(e) => setNewFin({ ...newFin, eventName: e.target.value })}
-                    className="w-full px-3 py-2 border border-[#E9DCC0] rounded-md bg-[#FAF7F2]"
+                    className="w-full px-3 py-2 border border-[#E9DCC0] rounded-md bg-[#FAF7F2] text-[#1A1A1A]"
                   />
                 </div>
                 <div className="grid grid-cols-2 gap-3">
                   <div>
-                    <label className="block uppercase tracking-wider text-[#8A7E6D] font-semibold mb-1">Contract Total (₹)</label>
+                    <label className="block uppercase tracking-wider text-[#8A7E6D] font-semibold mb-1">Total Contract (₹)</label>
                     <input
                       type="number"
                       required
+                      placeholder="e.g. 500000"
                       value={newFin.contractValue}
                       onChange={(e) => setNewFin({ ...newFin, contractValue: e.target.value })}
-                      className="w-full px-3 py-2 border border-[#E9DCC0] rounded-md bg-[#FAF7F2]"
+                      className="w-full px-3 py-2 border border-[#E9DCC0] rounded-md bg-[#FAF7F2] text-[#1A1A1A]"
                     />
                   </div>
                   <div>
                     <label className="block uppercase tracking-wider text-[#8A7E6D] font-semibold mb-1">Advance Paid (₹)</label>
                     <input
                       type="number"
+                      placeholder="e.g. 200000"
                       value={newFin.advancePaid}
                       onChange={(e) => setNewFin({ ...newFin, advancePaid: e.target.value })}
-                      className="w-full px-3 py-2 border border-[#E9DCC0] rounded-md bg-[#FAF7F2]"
+                      className="w-full px-3 py-2 border border-[#E9DCC0] rounded-md bg-[#FAF7F2] text-[#1A1A1A]"
                     />
                   </div>
                 </div>
-                <div className="grid grid-cols-2 gap-3">
+
+                {/* Auto Calculated Balance Preview */}
+                <div className="bg-[#FAF4E6] p-2.5 rounded-lg border border-[#E9DCC0] flex items-center justify-between text-xs">
+                  <span className="text-[#8C6B28] font-medium">Calculated Balance Due:</span>
+                  <span className="font-mono font-bold text-[#A26214]">
+                    ₹{Math.max(0, (Number(newFin.contractValue) || 0) - (Number(newFin.advancePaid) || 0)).toLocaleString('en-IN')}
+                  </span>
+                </div>
+
+                <div className="grid grid-cols-3 gap-2">
                   <div>
                     <label className="block uppercase tracking-wider text-[#8A7E6D] font-semibold mb-1">Decor Cost (₹)</label>
                     <input
                       type="number"
+                      placeholder="0"
                       value={newFin.decorExpense}
                       onChange={(e) => setNewFin({ ...newFin, decorExpense: e.target.value })}
-                      className="w-full px-3 py-2 border border-[#E9DCC0] rounded-md bg-[#FAF7F2]"
+                      className="w-full px-2.5 py-2 border border-[#E9DCC0] rounded-md bg-[#FAF7F2] text-[#1A1A1A]"
                     />
                   </div>
                   <div>
                     <label className="block uppercase tracking-wider text-[#8A7E6D] font-semibold mb-1">Catering Cost (₹)</label>
                     <input
                       type="number"
+                      placeholder="0"
                       value={newFin.cateringExpense}
                       onChange={(e) => setNewFin({ ...newFin, cateringExpense: e.target.value })}
-                      className="w-full px-3 py-2 border border-[#E9DCC0] rounded-md bg-[#FAF7F2]"
+                      className="w-full px-2.5 py-2 border border-[#E9DCC0] rounded-md bg-[#FAF7F2] text-[#1A1A1A]"
+                    />
+                  </div>
+                  <div>
+                    <label className="block uppercase tracking-wider text-[#8A7E6D] font-semibold mb-1">Other Cost (₹)</label>
+                    <input
+                      type="number"
+                      placeholder="0"
+                      value={newFin.otherExpense}
+                      onChange={(e) => setNewFin({ ...newFin, otherExpense: e.target.value })}
+                      className="w-full px-2.5 py-2 border border-[#E9DCC0] rounded-md bg-[#FAF7F2] text-[#1A1A1A]"
                     />
                   </div>
                 </div>
 
-                <div className="pt-3 flex justify-end gap-3">
+                <div>
+                  <label className="block uppercase tracking-wider text-[#8A7E6D] font-semibold mb-1">Payment Status</label>
+                  <select
+                    value={newFin.paymentStatus}
+                    onChange={(e) => setNewFin({ ...newFin, paymentStatus: e.target.value })}
+                    className="w-full px-3 py-2 border border-[#E9DCC0] rounded-md bg-[#FAF7F2] text-[#1A1A1A]"
+                  >
+                    <option value="Advance Received">Advance Received</option>
+                    <option value="Partially Paid">Partially Paid</option>
+                    <option value="Fully Paid">Fully Paid</option>
+                    <option value="Pending Payment">Pending Payment</option>
+                  </select>
+                </div>
+
+                <div className="pt-3 flex justify-end gap-3 border-t border-[#E9DCC0]">
                   <button
                     type="button"
                     onClick={() => setShowAddFinance(false)}
-                    className="px-4 py-2 border border-[#E9DCC0] rounded-md text-[#7A7266] cursor-pointer"
+                    className="px-4 py-2 border border-[#E9DCC0] rounded-md text-[#7A7266] hover:bg-[#FAF4E6] cursor-pointer"
                   >
                     Cancel
                   </button>
                   <button
                     type="submit"
-                    className="px-5 py-2 bg-[#1A1A1A] text-white font-semibold rounded-md hover:bg-[#B89657] cursor-pointer"
+                    className="px-5 py-2 bg-[#1A1A1A] text-white font-semibold rounded-md hover:bg-[#C9A86A] hover:text-[#1A1A1A] cursor-pointer transition-colors"
                   >
-                    Save Ledger Entry
+                    Save Entry
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+        )}
+
+        {/* Modal: Edit Financial Record (Update) */}
+        {editingFinRecord && (
+          <div className="fixed inset-0 z-60 flex items-center justify-center p-4 bg-[#1A1A1A]/70 backdrop-blur-xs">
+            <div className="bg-[#FFFDF9] border border-[#C9A86A] rounded-2xl max-w-lg w-full p-6 shadow-2xl max-h-[90vh] overflow-y-auto">
+              <div className="flex items-center justify-between pb-4 border-b border-[#E9DCC0] mb-4">
+                <div>
+                  <h4 className="font-serif text-xl text-[#1A1A1A] m-0">Edit Financial Record</h4>
+                  <p className="text-[11px] text-[#7A7266] m-0">Record ID: {editingFinRecord.id}</p>
+                </div>
+                <button onClick={() => setEditingFinRecord(null)} className="text-[#8A7E6D] hover:text-[#1A1A1A] cursor-pointer">
+                  <X className="w-5 h-5" />
+                </button>
+              </div>
+
+              <form onSubmit={handleUpdateFinance} className="space-y-3.5 text-xs">
+                <div>
+                  <label className="block uppercase tracking-wider text-[#8A7E6D] font-semibold mb-1">Client Name</label>
+                  <input
+                    type="text"
+                    required
+                    value={editingFinRecord.clientName}
+                    onChange={(e) => setEditingFinRecord({ ...editingFinRecord, clientName: e.target.value })}
+                    className="w-full px-3 py-2 border border-[#E9DCC0] rounded-md bg-[#FAF7F2] text-[#1A1A1A]"
+                  />
+                </div>
+                <div>
+                  <label className="block uppercase tracking-wider text-[#8A7E6D] font-semibold mb-1">Event Name / Occasion</label>
+                  <input
+                    type="text"
+                    required
+                    value={editingFinRecord.eventName}
+                    onChange={(e) => setEditingFinRecord({ ...editingFinRecord, eventName: e.target.value })}
+                    className="w-full px-3 py-2 border border-[#E9DCC0] rounded-md bg-[#FAF7F2] text-[#1A1A1A]"
+                  />
+                </div>
+                <div className="grid grid-cols-2 gap-3">
+                  <div>
+                    <label className="block uppercase tracking-wider text-[#8A7E6D] font-semibold mb-1">Total Contract (₹)</label>
+                    <input
+                      type="number"
+                      required
+                      value={editingFinRecord.contractValue}
+                      onChange={(e) => setEditingFinRecord({ ...editingFinRecord, contractValue: e.target.value })}
+                      className="w-full px-3 py-2 border border-[#E9DCC0] rounded-md bg-[#FAF7F2] text-[#1A1A1A]"
+                    />
+                  </div>
+                  <div>
+                    <label className="block uppercase tracking-wider text-[#8A7E6D] font-semibold mb-1">Advance Paid (₹)</label>
+                    <input
+                      type="number"
+                      value={editingFinRecord.advancePaid}
+                      onChange={(e) => setEditingFinRecord({ ...editingFinRecord, advancePaid: e.target.value })}
+                      className="w-full px-3 py-2 border border-[#E9DCC0] rounded-md bg-[#FAF7F2] text-[#1A1A1A]"
+                    />
+                  </div>
+                </div>
+
+                {/* Auto Calculated Balance Preview */}
+                <div className="bg-[#FAF4E6] p-2.5 rounded-lg border border-[#E9DCC0] flex items-center justify-between text-xs">
+                  <span className="text-[#8C6B28] font-medium">Auto Balance Due:</span>
+                  <span className="font-mono font-bold text-[#A26214]">
+                    ₹{Math.max(0, (Number(editingFinRecord.contractValue) || 0) - (Number(editingFinRecord.advancePaid) || 0)).toLocaleString('en-IN')}
+                  </span>
+                </div>
+
+                <div className="grid grid-cols-3 gap-2">
+                  <div>
+                    <label className="block uppercase tracking-wider text-[#8A7E6D] font-semibold mb-1">Decor Cost (₹)</label>
+                    <input
+                      type="number"
+                      value={editingFinRecord.decorExpense}
+                      onChange={(e) => setEditingFinRecord({ ...editingFinRecord, decorExpense: e.target.value })}
+                      className="w-full px-2.5 py-2 border border-[#E9DCC0] rounded-md bg-[#FAF7F2] text-[#1A1A1A]"
+                    />
+                  </div>
+                  <div>
+                    <label className="block uppercase tracking-wider text-[#8A7E6D] font-semibold mb-1">Catering Cost (₹)</label>
+                    <input
+                      type="number"
+                      value={editingFinRecord.cateringExpense}
+                      onChange={(e) => setEditingFinRecord({ ...editingFinRecord, cateringExpense: e.target.value })}
+                      className="w-full px-2.5 py-2 border border-[#E9DCC0] rounded-md bg-[#FAF7F2] text-[#1A1A1A]"
+                    />
+                  </div>
+                  <div>
+                    <label className="block uppercase tracking-wider text-[#8A7E6D] font-semibold mb-1">Other Cost (₹)</label>
+                    <input
+                      type="number"
+                      value={editingFinRecord.otherExpense || ''}
+                      onChange={(e) => setEditingFinRecord({ ...editingFinRecord, otherExpense: e.target.value })}
+                      className="w-full px-2.5 py-2 border border-[#E9DCC0] rounded-md bg-[#FAF7F2] text-[#1A1A1A]"
+                    />
+                  </div>
+                </div>
+
+                <div>
+                  <label className="block uppercase tracking-wider text-[#8A7E6D] font-semibold mb-1">Payment Status</label>
+                  <select
+                    value={editingFinRecord.paymentStatus}
+                    onChange={(e) => setEditingFinRecord({ ...editingFinRecord, paymentStatus: e.target.value })}
+                    className="w-full px-3 py-2 border border-[#E9DCC0] rounded-md bg-[#FAF7F2] text-[#1A1A1A]"
+                  >
+                    <option value="Advance Received">Advance Received</option>
+                    <option value="Partially Paid">Partially Paid</option>
+                    <option value="Fully Paid">Fully Paid</option>
+                    <option value="Pending Payment">Pending Payment</option>
+                  </select>
+                </div>
+
+                <div className="pt-3 flex justify-end gap-3 border-t border-[#E9DCC0]">
+                  <button
+                    type="button"
+                    onClick={() => setEditingFinRecord(null)}
+                    className="px-4 py-2 border border-[#E9DCC0] rounded-md text-[#7A7266] hover:bg-[#FAF4E6] cursor-pointer"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    type="submit"
+                    className="px-5 py-2 bg-[#1A1A1A] text-white font-semibold rounded-md hover:bg-[#C9A86A] hover:text-[#1A1A1A] cursor-pointer transition-colors"
+                  >
+                    Update & Save Changes
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+        )}
+
+        {/* Modal: Add New Offering Card */}
+        {showAddService && (
+          <div className="fixed inset-0 z-60 flex items-center justify-center p-4 bg-[#1A1A1A]/70 backdrop-blur-xs">
+            <div className="bg-[#FFFDF9] border border-[#C9A86A] rounded-2xl max-w-md w-full p-6 shadow-2xl">
+              <div className="flex items-center justify-between pb-4 border-b border-[#E9DCC0] mb-4">
+                <h4 className="font-serif text-xl text-[#1A1A1A]">Add New Offering Card</h4>
+                <button onClick={() => setShowAddService(false)} className="text-[#8A7E6D] hover:text-[#1A1A1A] cursor-pointer">
+                  <X className="w-5 h-5" />
+                </button>
+              </div>
+
+              <form onSubmit={handleCreateServiceSubmit} className="space-y-3.5 text-xs">
+                <div>
+                  <label className="block uppercase tracking-wider text-[#8A7E6D] font-semibold mb-1">Offering Title</label>
+                  <input
+                    type="text"
+                    required
+                    placeholder="e.g. Royal Silver Service & Drone Show"
+                    value={newServiceData.title}
+                    onChange={(e) => setNewServiceData({ ...newServiceData, title: e.target.value })}
+                    className="w-full px-3 py-2 border border-[#E9DCC0] rounded-md bg-[#FAF7F2] text-[#1A1A1A]"
+                  />
+                </div>
+                <div>
+                  <label className="block uppercase tracking-wider text-[#8A7E6D] font-semibold mb-1">Subtitle / Category</label>
+                  <input
+                    type="text"
+                    placeholder="e.g. Bespoke Production"
+                    value={newServiceData.subtitle}
+                    onChange={(e) => setNewServiceData({ ...newServiceData, subtitle: e.target.value })}
+                    className="w-full px-3 py-2 border border-[#E9DCC0] rounded-md bg-[#FAF7F2] text-[#1A1A1A]"
+                  />
+                </div>
+                <div>
+                  <label className="block uppercase tracking-wider text-[#8A7E6D] font-semibold mb-1">Photo URL / File Path</label>
+                  <input
+                    type="text"
+                    placeholder="/events/wedding_stage_decor.png or https://..."
+                    value={newServiceData.image}
+                    onChange={(e) => setNewServiceData({ ...newServiceData, image: e.target.value })}
+                    className="w-full px-3 py-2 border border-[#E9DCC0] rounded-md bg-[#FAF7F2] text-[#1A1A1A] font-mono text-[11px]"
+                  />
+                </div>
+                <div>
+                  <label className="block uppercase tracking-wider text-[#8A7E6D] font-semibold mb-1">Short Description</label>
+                  <textarea
+                    rows={2}
+                    placeholder="Description of this offering..."
+                    value={newServiceData.description}
+                    onChange={(e) => setNewServiceData({ ...newServiceData, description: e.target.value })}
+                    className="w-full px-3 py-2 border border-[#E9DCC0] rounded-md bg-[#FAF7F2] text-[#1A1A1A]"
+                  />
+                </div>
+
+                <div className="pt-3 flex justify-end gap-3 border-t border-[#E9DCC0]">
+                  <button
+                    type="button"
+                    onClick={() => setShowAddService(false)}
+                    className="px-4 py-2 border border-[#E9DCC0] rounded-md text-[#7A7266] hover:bg-[#FAF4E6] cursor-pointer"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    type="submit"
+                    className="px-5 py-2 bg-[#1A1A1A] text-white font-semibold rounded-md hover:bg-[#C9A86A] hover:text-[#1A1A1A] cursor-pointer transition-colors"
+                  >
+                    Add Offering Card
                   </button>
                 </div>
               </form>
