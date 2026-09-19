@@ -400,7 +400,7 @@ export default function AdminLeadsModal({
                 onClick={handleLogout}
                 className="text-xs font-sans tracking-wider uppercase text-[#C9A86A] hover:text-[#FAF7F2] px-3.5 py-1.5 rounded-lg border border-[#C9A86A]/40 hover:bg-white/10 transition-all cursor-pointer font-medium"
               >
-                Exit / Log Out
+                Logout
               </button>
             ) : (
               <button
