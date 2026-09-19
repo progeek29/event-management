@@ -104,9 +104,19 @@ export default function App() {
     setLeads((prev) => prev.filter((lead) => lead.id !== leadId));
   };
 
-  // Financial record handling
+  // Financial record handling (Full CRUD)
   const handleAddFinancialRecord = (newFinRecord) => {
     setFinancials((prev) => [newFinRecord, ...prev]);
+  };
+
+  const handleUpdateFinancialRecord = (updatedRecord) => {
+    setFinancials((prev) =>
+      prev.map((rec) => (rec.id === updatedRecord.id ? updatedRecord : rec))
+    );
+  };
+
+  const handleDeleteFinancialRecord = (recordId) => {
+    setFinancials((prev) => prev.filter((rec) => rec.id !== recordId));
   };
 
   // Admin service update handling
@@ -114,6 +124,10 @@ export default function App() {
     setServices((prev) =>
       prev.map((s) => (s.id === updatedService.id ? updatedService : s))
     );
+  };
+
+  const handleAddService = (newService) => {
+    setServices((prev) => [...prev, newService]);
   };
 
   // Navigation handlers
@@ -182,8 +196,11 @@ export default function App() {
           onDeleteLead={handleDeleteLead}
           financials={financials}
           onAddFinancialRecord={handleAddFinancialRecord}
+          onUpdateFinancialRecord={handleUpdateFinancialRecord}
+          onDeleteFinancialRecord={handleDeleteFinancialRecord}
           services={services}
           onUpdateService={handleUpdateService}
+          onAddService={handleAddService}
         />
       )}
 

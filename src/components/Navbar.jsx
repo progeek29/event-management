@@ -44,20 +44,15 @@ export default function Navbar({ onOpenAdmin, onNavigateToReservation }) {
             <span>{BRAND_INFO.contacts[0].phoneDisplay}</span>
           </a>
           <span className="text-white/20">|</span>
-          <a
-            href="#admin"
-            target="_blank"
-            rel="noopener noreferrer"
-            onClick={(e) => {
-              e.preventDefault();
-              window.open('#admin', '_blank');
-            }}
+          <button
+            type="button"
+            onClick={onOpenAdmin}
             className="hover:text-[#C5A880] transition-colors flex items-center gap-1 cursor-pointer text-[#A39688]"
-            title="Open Admin Portal in New Page"
+            title="Open Admin Portal"
           >
             <Lock className="w-3 h-3 text-[#8C7355]" />
-            <span className="text-[10px] tracking-widest uppercase">Admin ↗</span>
-          </a>
+            <span className="text-[10px] tracking-widest uppercase">Admin</span>
+          </button>
         </div>
       </div>
 
@@ -179,19 +174,18 @@ export default function Navbar({ onOpenAdmin, onNavigateToReservation }) {
                   <Phone className="w-3 h-3 text-[#8C7355]" />
                   <span>{BRAND_INFO.contacts[0].phoneDisplay}</span>
                 </a>
-                <a
-                  href="#admin"
-                  target="_blank"
-                  rel="noopener noreferrer"
+                <button
+                  type="button"
                   onClick={() => {
                     setMobileMenuOpen(false);
+                    onOpenAdmin();
                   }}
-                  className="flex items-center gap-1.5 text-[#A39688] hover:text-[#C5A880]"
-                  title="Open Admin Vault in New Page"
+                  className="flex items-center gap-1.5 text-[#A39688] hover:text-[#C5A880] cursor-pointer"
+                  title="Open Admin Portal"
                 >
                   <Lock className="w-3 h-3 text-[#8C7355]" />
-                  <span>Admin Vault ↗</span>
-                </a>
+                  <span>Admin Portal</span>
+                </button>
               </div>
             </div>
           </div>
