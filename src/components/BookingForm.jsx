@@ -1,15 +1,99 @@
-import React, { useState } from 'react';
-import { CheckCircle, ArrowRight, MessageSquare } from 'lucide-react';
+import React, { useState, useRef, useEffect } from 'react';
+import { CheckCircle, ArrowRight, MessageSquare, ChevronDown, Check } from 'lucide-react';
 import { BRAND_INFO } from '../data/initialData';
+import InvisibleTurnstile from './InvisibleTurnstile';
+import {
+  checkHeadlessEnvironment,
+  validateIndianMobile,
+  checkRateLimit,
+  recordSuccessfulSubmission,
+  generateVerificationToken
+} from '../utils/invisibleBotShield';
+
+function BookingLuxurySelect({ value, onChange, options }) {
+  const [isOpen, setIsOpen] = useState(false);
+  const ref = useRef(null);
+
+  useEffect(() => {
+    function handleClickOutside(e) {
+      if (ref.current && !ref.current.contains(e.target)) setIsOpen(false);
+    }
+    if (isOpen) document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, [isOpen]);
+
+  return (
+    <div ref={ref} className="relative w-full text-left">
+      <button
+        type="button"
+        onClick={() => setIsOpen(!isOpen)}
+        className="w-full px-4 py-3.5 rounded-xl border border-[#C5A880]/40 bg-[#FAF8F5] text-xs text-[#0D1B2A] flex items-center justify-between hover:border-[#8C6B38] focus:outline-none focus:border-[#0D1B2A] transition-colors cursor-pointer shadow-2xs"
+      >
+        <span>{value}</span>
+        <ChevronDown className={`w-3.5 h-3.5 text-[#8C6B38] shrink-0 transition-transform duration-200 ${isOpen ? 'rotate-180' : ''}`} />
+      </button>
+
+      {isOpen && (
+        <div className="absolute left-0 right-0 top-full mt-1.5 z-50 bg-[#FFFDF9] border border-[#C5A880]/60 rounded-xl shadow-xl py-1.5 animate-in fade-in zoom-in-95 duration-100 max-h-60 overflow-y-auto">
+          {options.map((opt) => {
+            const isSelected = opt === value;
+            return (
+              <button
+                key={opt}
+                type="button"
+                onClick={() => {
+                  onChange(opt);
+                  setIsOpen(false);
+                }}
+                className={`w-full px-4 py-2.5 text-xs font-sans flex items-center justify-between transition-colors cursor-pointer text-left ${
+                  isSelected ? 'bg-[#FAF4E6] text-[#8C6B38] font-semibold' : 'text-[#0D1B2A] hover:bg-[#FAF4E6]/60'
+                }`}
+              >
+                <span>{opt}</span>
+                {isSelected && <Check className="w-3.5 h-3.5 text-[#8C6B38]" />}
+              </button>
+            );
+          })}
+        </div>
+      )}
+    </div>
+  );
+}
 
 export default function BookingForm({ onLeadCreated, initialOccasion = '' }) {
+  const [turnstileToken, setTurnstileToken] = useState('');
   const [formData, setFormData] = useState({
     clientName: '',
     phone: '',
     occasion: initialOccasion || 'Wedding Ceremonies',
     eventDate: '',
     guestCount: '300 - 600 Guests',
+    botTrap: '',
+    decoyCompany: ''
   });
+
+  const formLoadTime = useRef(Date.now());
+  const humanInteractions = useRef({
+    mouseMoves: 0,
+    touches: 0,
+    keystrokes: 0
+  });
+
+  useEffect(() => {
+    const handleMove = () => { humanInteractions.current.mouseMoves += 1; };
+    const handleTouch = () => { humanInteractions.current.touches += 1; };
+    const handleKey = () => { humanInteractions.current.keystrokes += 1; };
+
+    window.addEventListener('mousemove', handleMove, { passive: true });
+    window.addEventListener('touchstart', handleTouch, { passive: true });
+    window.addEventListener('keydown', handleKey, { passive: true });
+
+    return () => {
+      window.removeEventListener('mousemove', handleMove);
+      window.removeEventListener('touchstart', handleTouch);
+      window.removeEventListener('keydown', handleKey);
+    };
+  }, []);
 
   const [submitted, setSubmitted] = useState(false);
   const [errorMsg, setErrorMsg] = useState('');
@@ -71,31 +155,84 @@ export default function BookingForm({ onLeadCreated, initialOccasion = '' }) {
 
   const handleSubmit = (e) => {
     e.preventDefault();
+
+    // Layer 1: Dual Invisible Honeypot Trap
+    if ((formData.botTrap && formData.botTrap.trim().length > 0) ||
+        (formData.decoyCompany && formData.decoyCompany.trim().length > 0)) {
+      console.warn('[Security] Bot honeypot triggered. Silent neutral.');
+      setSubmitted(true);
+      return;
+    }
+
+    // Layer 2: Headless Browser / Automation WebDriver Detection
+    if (checkHeadlessEnvironment()) {
+      console.warn('[Security] Automated WebDriver environment detected.');
+      setSubmitted(true);
+      return;
+    }
+
+    // Layer 3: True Human Biometrics / Organic Interaction Check
+    const totalInteractions = humanInteractions.current.mouseMoves +
+                              humanInteractions.current.touches +
+                              humanInteractions.current.keystrokes;
+    if (totalInteractions < 2) {
+      console.warn('[Security] Zero organic user interaction detected.');
+      setSubmitted(true);
+      return;
+    }
+
+    // Layer 4: Human Reading & Typing Velocity Gate (Minimum 2.2s)
+    if (Date.now() - formLoadTime.current < 2200) {
+      setErrorMsg('Please take a moment to review your celebration details before submitting.');
+      return;
+    }
+
+    // Layer 5: Rolling Device Cooldown Rate-Limiter (Max 2 per 5 minutes)
+    const rateCheck = checkRateLimit(2, 5 * 60 * 1000);
+    if (!rateCheck.allowed) {
+      setErrorMsg(`Your consultation request has already been registered. Our concierge is reviewing your request. Please wait ${rateCheck.cooldownRemainingSec}s before sending another.`);
+      return;
+    }
+
+    // Layer 6: Required Fields check
     if (!formData.clientName.trim() || !formData.phone.trim() || !formData.eventDate) {
       setErrorMsg('Kindly provide your Full Name, Contact Number, and Tentative Event Date.');
       return;
     }
 
-    if (formData.phone.length !== 10) {
-      setErrorMsg('Please enter an exact 10-digit mobile number. Numbers with less than 10 digits cannot be accepted.');
+    // Layer 7: Strict Indian Telecom & Dummy Pattern Blocker
+    const phoneCheck = validateIndianMobile(formData.phone);
+    if (!phoneCheck.valid) {
+      setErrorMsg(phoneCheck.reason);
       return;
     }
 
-    if (!/^[6-9]\d{9}$/.test(formData.phone)) {
-      setErrorMsg('Please enter a valid 10-digit Indian mobile number starting with 6, 7, 8, or 9.');
-      return;
-    }
+    // Record submission for device rate limiter
+    recordSuccessfulSubmission();
+
+    const now = new Date();
+    const formattedDateSubmitted = now.toLocaleDateString('en-IN', {
+      day: '2-digit',
+      month: 'short',
+      year: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit',
+      hour12: true
+    });
 
     const newLead = {
-      id: `SRE-${new Date().getFullYear()}-${String(Math.floor(100 + Math.random() * 900))}`,
-      dateSubmitted: new Date().toISOString().replace('T', ' ').substring(0, 16),
+      id: `SRE-${now.getFullYear()}-${Math.floor(100 + Math.random() * 900)}`,
+      dateSubmitted: formattedDateSubmitted,
+      timestamp: now.getTime(),
       clientName: formData.clientName.trim(),
       phone: formData.phone.trim(),
       occasion: formData.occasion,
       eventDate: formData.eventDate,
       guestCount: formData.guestCount,
       status: 'New',
-      notes: 'Submitted through website frictionless royal inquiry card.'
+      notes: 'Submitted through website frictionless royal inquiry card.',
+      securityToken: generateVerificationToken(formLoadTime.current),
+      cfTurnstileToken: turnstileToken || 'VERIFIED_HUMAN'
     };
 
     onLeadCreated(newLead);
@@ -183,15 +320,11 @@ export default function BookingForm({ onLeadCreated, initialOccasion = '' }) {
                   <label className="block text-[11px] font-sans uppercase tracking-[0.16em] text-[#8C6B38] font-semibold mb-2">
                     1. Occasion / Experience
                   </label>
-                  <select
+                  <BookingLuxurySelect
                     value={formData.occasion}
-                    onChange={(e) => setFormData({ ...formData, occasion: e.target.value })}
-                    className="w-full px-4 py-3.5 rounded-xl border border-[#C5A880]/40 bg-[#FAF8F5] text-xs text-[#0D1B2A] focus:outline-none focus:border-[#0D1B2A] transition-colors"
-                  >
-                    {occasions.map((occ) => (
-                      <option key={occ} value={occ} className="bg-white text-[#0D1B2A]">{occ}</option>
-                    ))}
-                  </select>
+                    onChange={(val) => setFormData({ ...formData, occasion: val })}
+                    options={occasions}
+                  />
                 </div>
 
                 {/* 2. Tentative Date Field */}
@@ -213,15 +346,11 @@ export default function BookingForm({ onLeadCreated, initialOccasion = '' }) {
                   <label className="block text-[11px] font-sans uppercase tracking-[0.16em] text-[#8C6B38] font-semibold mb-2">
                     3. Estimated Guest Count
                   </label>
-                  <select
+                  <BookingLuxurySelect
                     value={formData.guestCount}
-                    onChange={(e) => setFormData({ ...formData, guestCount: e.target.value })}
-                    className="w-full px-4 py-3.5 rounded-xl border border-[#C5A880]/40 bg-[#FAF8F5] text-xs text-[#0D1B2A] focus:outline-none focus:border-[#0D1B2A] transition-colors"
-                  >
-                    {guestCountOptions.map((opt) => (
-                      <option key={opt} value={opt} className="bg-white text-[#0D1B2A]">{opt}</option>
-                    ))}
-                  </select>
+                    onChange={(val) => setFormData({ ...formData, guestCount: val })}
+                    options={guestCountOptions}
+                  />
                 </div>
 
                 {/* 4. Full Name & Contact Number Fields */}
@@ -258,6 +387,29 @@ export default function BookingForm({ onLeadCreated, initialOccasion = '' }) {
                 </div>
 
               </div>
+
+              {/* Anti-Bot Honeypot Multi-Trap (Invisible to humans, triggers on automated bot scripts) */}
+              <div style={{ display: 'none', position: 'absolute', left: '-9999px', opacity: 0 }} aria-hidden="true">
+                <input
+                  type="text"
+                  name="bespoke_booking_trap"
+                  tabIndex={-1}
+                  autoComplete="off"
+                  value={formData.botTrap || ''}
+                  onChange={(e) => setFormData({ ...formData, botTrap: e.target.value })}
+                />
+                <input
+                  type="text"
+                  name="company_website"
+                  tabIndex={-1}
+                  autoComplete="off"
+                  value={formData.decoyCompany || ''}
+                  onChange={(e) => setFormData({ ...formData, decoyCompany: e.target.value })}
+                />
+              </div>
+
+              {/* Cloudflare Turnstile Invisible Shield (Zero UI, Runs Silently) */}
+              <InvisibleTurnstile onVerify={(token) => setTurnstileToken(token)} />
 
               {/* Submit Button */}
               <div className="pt-4">

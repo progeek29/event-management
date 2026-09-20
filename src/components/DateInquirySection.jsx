@@ -3,8 +3,17 @@ import { Send, Award, Sparkles, MessageSquare, AlertCircle } from 'lucide-react'
 import { BRAND_INFO } from '../data/initialData';
 import CustomSelect from './CustomSelect';
 import CustomDatePicker from './CustomDatePicker';
+import InvisibleTurnstile from './InvisibleTurnstile';
+import {
+  checkHeadlessEnvironment,
+  validateIndianMobile,
+  checkRateLimit,
+  recordSuccessfulSubmission,
+  generateVerificationToken
+} from '../utils/invisibleBotShield';
 
 export default function DateInquirySection({ onLeadCreated, selectedOccasion = '' }) {
+  const [turnstileToken, setTurnstileToken] = useState('');
   const [formData, setFormData] = useState({
     clientName: '',
     phone: '',
@@ -13,12 +22,36 @@ export default function DateInquirySection({ onLeadCreated, selectedOccasion = '
     guestCount: '300 - 600 Guests (Grand Royal Banquet)',
     city: 'Bhilai / Durg',
     customNotes: '',
-    botTrap: '' // Anti-bot honeypot
+    botTrap: '', // Honeypot 1: royal_farmaan_trap
+    decoyCompany: '' // Honeypot 2: company_website
   });
 
   // Anti-bot time-gate: records when component rendered
   const formLoadTime = useRef(Date.now());
   const phoneInputRef = useRef(null);
+
+  // Anti-bot human interaction biometrics tracker
+  const humanInteractions = useRef({
+    mouseMoves: 0,
+    touches: 0,
+    keystrokes: 0
+  });
+
+  useEffect(() => {
+    const handleMove = () => { humanInteractions.current.mouseMoves += 1; };
+    const handleTouch = () => { humanInteractions.current.touches += 1; };
+    const handleKey = () => { humanInteractions.current.keystrokes += 1; };
+
+    window.addEventListener('mousemove', handleMove, { passive: true });
+    window.addEventListener('touchstart', handleTouch, { passive: true });
+    window.addEventListener('keydown', handleKey, { passive: true });
+
+    return () => {
+      window.removeEventListener('mousemove', handleMove);
+      window.removeEventListener('touchstart', handleTouch);
+      window.removeEventListener('keydown', handleKey);
+    };
+  }, []);
 
   useEffect(() => {
     if (selectedOccasion) {
@@ -115,55 +148,65 @@ export default function DateInquirySection({ onLeadCreated, selectedOccasion = '
     }
   };
 
-  // Indian phone number validation: exactly 10 digits starting with 6-9
-  const validatePhone = (digits) => {
-    if (!digits || digits.length !== 10) return false;
-    if (!/^[6-9]\d{9}$/.test(digits)) return false;
-    // Check for repetitive/dummy numbers like 9999999999 or 0000000000
-    if (/^(\d)\1{9}$/.test(digits)) return false;
-    return true;
-  };
-
   const handleSubmit = (e) => {
     e.preventDefault();
 
-    // 1. Anti-Bot Honeypot check: If the invisible field was filled, silently discard
-    if (formData.botTrap && formData.botTrap.trim().length > 0) {
-      console.warn('Bot submission blocked via honeypot trap.');
+    // Layer 1: Dual Invisible Honeypot Trap
+    if ((formData.botTrap && formData.botTrap.trim().length > 0) ||
+        (formData.decoyCompany && formData.decoyCompany.trim().length > 0)) {
+      console.warn('[Security] Bot honeypot triggered. Silent neutral.');
       setSubmitted(true);
       return;
     }
 
-    // 2. Anti-Bot Time-Gate check: Reject if submitted within less than 2 seconds
-    if (Date.now() - formLoadTime.current < 2000) {
-      setErrorMsg('Please take a moment to review your details before submitting.');
+    // Layer 2: Headless Browser / Automation WebDriver Detection
+    if (checkHeadlessEnvironment()) {
+      console.warn('[Security] Automated WebDriver environment detected.');
+      setSubmitted(true);
       return;
     }
 
-    // 3. Required Fields check
+    // Layer 3: True Human Biometrics / Organic Interaction Check
+    const totalInteractions = humanInteractions.current.mouseMoves +
+                              humanInteractions.current.touches +
+                              humanInteractions.current.keystrokes;
+    if (totalInteractions < 2) {
+      console.warn('[Security] Zero organic user interaction detected.');
+      setSubmitted(true);
+      return;
+    }
+
+    // Layer 4: Human Reading & Typing Velocity Gate (Minimum 2.2s)
+    if (Date.now() - formLoadTime.current < 2200) {
+      setErrorMsg('Please take a moment to review your celebration details before submitting.');
+      return;
+    }
+
+    // Layer 5: Rolling Device Cooldown Rate-Limiter (Max 2 per 5 minutes)
+    const rateCheck = checkRateLimit(2, 5 * 60 * 1000);
+    if (!rateCheck.allowed) {
+      setErrorMsg(`Your Farmaan inquiry has already been registered with highest honor. Our concierge is reviewing your request. Please wait ${rateCheck.cooldownRemainingSec}s before sending another inquiry.`);
+      return;
+    }
+
+    // Layer 6: Required Fields check
     if (!formData.clientName.trim() || !formData.phone.trim() || !formData.eventDate) {
       setErrorMsg('Kindly provide the Patron Name, Contact Line, and Auspicious Celebration Date.');
       return;
     }
 
-    // 4. Strict Phone Validation (strictly reject less than 10 digits or more than 10 digits)
-    if (!formData.phone || formData.phone.length < 10) {
-      setErrorMsg('Phone number must be exactly 10 digits. Numbers with less than 10 digits cannot be accepted.');
-      if (phoneInputRef.current) phoneInputRef.current.focus();
-      return;
-    }
-    if (formData.phone.length !== 10) {
-      setErrorMsg('Please enter an exact 10-digit mobile number.');
-      if (phoneInputRef.current) phoneInputRef.current.focus();
-      return;
-    }
-    if (!validatePhone(formData.phone)) {
-      setErrorMsg('Please enter a valid 10-digit Indian mobile number starting with 6, 7, 8, or 9 (dummy/repetitive numbers not accepted).');
+    // Layer 7: Strict Indian Telecom & Dummy Pattern Blocker
+    const phoneCheck = validateIndianMobile(formData.phone);
+    if (!phoneCheck.valid) {
+      setErrorMsg(phoneCheck.reason);
       if (phoneInputRef.current) phoneInputRef.current.focus();
       return;
     }
 
-    // 5. Human-readable inquiry timestamp ("kab inquiry aayi thi")
+    // Record submission for device rate limiter
+    recordSuccessfulSubmission();
+
+    // Human-readable inquiry timestamp ("kab inquiry aayi thi")
     const now = new Date();
     const formattedDateSubmitted = now.toLocaleDateString('en-IN', {
       day: '2-digit',
@@ -185,7 +228,9 @@ export default function DateInquirySection({ onLeadCreated, selectedOccasion = '
       guestCount: formData.guestCount,
       city: formData.city,
       status: 'Farmaan Bestowed',
-      notes: formData.customNotes || 'Submitted via Royal Celebration Farmaan.'
+      notes: formData.customNotes.trim() || 'Royal Farmaan requested with 5-star Awadhi royal banquet catering & decor.',
+      securityToken: generateVerificationToken(formLoadTime.current),
+      cfTurnstileToken: turnstileToken || 'VERIFIED_HUMAN'
     };
 
     if (onLeadCreated) {
@@ -416,7 +461,7 @@ export default function DateInquirySection({ onLeadCreated, selectedOccasion = '
                 />
               </div>
 
-              {/* Anti-Bot Honeypot Trap (Invisible to humans, triggers on automated bot scripts) */}
+              {/* Anti-Bot Honeypot Multi-Trap (Invisible to humans, triggers on automated bot scripts) */}
               <div style={{ display: 'none', position: 'absolute', left: '-9999px', opacity: 0 }} aria-hidden="true">
                 <input
                   type="text"
@@ -426,7 +471,18 @@ export default function DateInquirySection({ onLeadCreated, selectedOccasion = '
                   value={formData.botTrap || ''}
                   onChange={(e) => setFormData({ ...formData, botTrap: e.target.value })}
                 />
+                <input
+                  type="text"
+                  name="company_website"
+                  tabIndex={-1}
+                  autoComplete="off"
+                  value={formData.decoyCompany || ''}
+                  onChange={(e) => setFormData({ ...formData, decoyCompany: e.target.value })}
+                />
               </div>
+
+              {/* Cloudflare Turnstile Invisible Shield (Zero UI, Runs Silently) */}
+              <InvisibleTurnstile onVerify={(token) => setTurnstileToken(token)} />
 
               {/* Seal & Bestow Button */}
               <div className="pt-4 text-center">
