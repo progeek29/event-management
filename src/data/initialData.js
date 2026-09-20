@@ -47,144 +47,92 @@ export const BRAND_INFO = {
 };
 
 // Curated 5 Core Services from Brand Standee
+// Curated 5 Photographic Stories / Master Offerings
 export const BANNER_SERVICES = [
   {
-    id: "weddings",
+    id: "story-1",
     number: "01",
-    title: "Destination Weddings & Mandaps",
-    titleHi: "शाही विवाह एवं मंडप समारोह",
-    subtitle: "Royal Mandaps, Varmala & Sangeet",
-    subtitleHi: "भव्य मंडप, वरमाला स्टेज व संगीत",
-    description: "End-to-end bespoke wedding architecture. From monumental glass and hand-carved mandaps to celebrity baraat entries, revolving hydraulic varmala stages, and intelligent concert sound.",
-    descriptionHi: "सम्पूर्ण शाही विवाह प्रबंधन — नक्काशीदार भव्य मंडप, सेलिब्रिटी स्टाइल बारात एंट्री, हाइड्रोलिक वरमाला स्टेज, और विश्वस्तरीय साउंड व लाइट व्यवस्था।",
+    theme: "Sacred Promises",
+    subtitle: "Sacred Promises",
+    title: "The Moments That Become Memories",
+    caption: "Walking hand in hand into forever under fresh floral canopies.",
+    description: "Walking hand in hand into forever under fresh floral canopies.",
     image: "/events/moments-become-memories.jpg",
-    features: [
-      "Custom Carved Mandaps & Glass Pavilions",
-      "Celebrity-Style Royal Bride & Groom Grand Entry",
-      "Cold Pyro & Theatrical Atmosphere Special FX",
-      "Dedicated Event Captain for Zero-Stress Hosting"
-    ],
-    featuresHi: [
-      "राजसी नक्काशीदार मंडप एवं ग्लास पवेलियन",
-      "रॉयल ब्राइड एवं ग्रूम भव्य एंट्री",
-      "कोल्ड पायरो एवं थियेट्रिकल स्पेशल इफेक्ट्स",
-      "तनावमुक्त आयोजन हेतु समर्पित इवेंट कैप्टन"
-    ]
+    dialogue: "Walking into forever through hand-crafted floral chandeliers. When the world falls quiet, only your sacred covenant remains.",
+    tagline: "The Sacred Covenant & Eternal Pheras",
+    decor: "Bespoke hand-carved mandap with cascading mogra canopies, antique brass lamps, and floral couple pathways.",
+    culinary: "Royal Awadhi Dastarkhwan, signature shahi paneer, slow-simmered dal makhani, and live dessert counters in pure desi ghee.",
+    hospitality: "Silver platter attar greeting, dedicated family concierge, and synchronized varmala mist & cold pyros.",
+    guestCapacity: "300 to 2,000+ Guests",
+    occasion: "Royal Wedding & Mandap Setup"
   },
   {
-    id: "engagement",
+    id: "story-2",
     number: "02",
-    title: "Engagement & Sangeet Nights",
-    titleHi: "सगाई, संगीत एवं भव्य रिसेप्शन",
-    subtitle: "Opulent Stages, Florals & Grand Banquets",
-    subtitleHi: "आकर्षक स्टेज, फ्लोरल डेकोर व बैंक्वेट",
-    description: "Enchanting reception stages adorned with fresh imported florals, vintage crystal chandeliers, cascading light tunnels, and curated fine dining for high-society gatherings.",
-    descriptionHi: "ताजे विदेशी फूलों से सुसज्जित भव्य स्टेज, विंटेज क्रिस्टल झूमर, आकर्षक लाइट टनल, और उच्च स्तरीय डाइनिंग अनुभव।",
+    theme: "Unscripted Magic",
+    subtitle: "Unscripted Magic",
+    title: "The Moments You Never Planned",
+    caption: "Spontaneous bridal twirls, stolen glances, and pure euphoria.",
+    description: "Spontaneous bridal twirls, stolen glances, and pure euphoria.",
     image: "/events/unplanned-moments.jpg",
-    features: [
-      "Designer 40ft Luxury Stage Facades & Arches",
-      "Live Acoustic Symphony & Musician Curation",
-      "Memory Photo Pathway with Amber Fairy Lights",
-      "Brass & Porcelain Plated VIP Guest Service"
-    ],
-    featuresHi: [
-      "40 फीट लक्ज़री डिजाइनर स्टेज व मेहराब",
-      "लाइव एकॉस्टिक सिम्फनी एवं म्यूजिशियन",
-      "मेमोरी फोटो पाथवे विथ एम्बर लाइट्स",
-      "ब्रास एवं क्रॉकरी प्लेटेड वीआईपी हॉस्पिटैलिटी"
-    ]
+    dialogue: "The greatest memories are never rehearsed. A spontaneous spin in your lehenga and the unscripted joy between rituals.",
+    tagline: "Pre-Wedding Euphoria & Unscripted Joy",
+    decor: "Concert-grade P2.5 LED backdrop, kinetic beam lighting, mirror dance floors, and themed photo-op installations.",
+    culinary: "Live Banarasi chaat street, gourmet wood-fired pizza counters, artisan mocktail bar, and fusion appetizers.",
+    hospitality: "Choreographed sangeet run-of-show, backstage artist management, and professional audio-visual engineering.",
+    guestCapacity: "150 to 800+ Guests",
+    occasion: "Engagement & Sangeet Gala"
   },
   {
-    id: "catering",
+    id: "story-3",
     number: "03",
-    title: "Catering & Royal Feasts",
-    titleHi: "शाही कैटरिंग एवं लज़ीज़ दावत",
-    subtitle: "5-Star Awadhi, Live Chaat & Global Menus",
-    subtitleHi: "शुद्ध घी व्यंजन, लाइव चाट व 5-स्टार मेनू",
-    description: "Pure-ghee traditional delicacies, live Banarasi chaat bazzar, wood-fired continental stations, and artisanal royal mithai prepared by seasoned Awadhi master chefs.",
-    descriptionHi: "शुद्ध देशी घी के पारंपरिक पकवान, लाइव बनारसी चाट बाज़ार, कॉन्टिनेंटल फ़ूड स्टेशन, और अवधी उस्ताद शेफ द्वारा तैयार शाही मिठाइयाँ।",
-    image: "https://images.unsplash.com/photo-1555244162-803834f70033?q=80&w=1200&auto=format&fit=crop",
-    features: [
-      "Authentic Traditional Pure-Ghee Sweets & Desserts",
-      "Live Delhi-6 & Banarasi Chaat Street Counters",
-      "Traditional Awadhi, Mughlai & South Indian Buffets",
-      "100% Hygiene Audited Uniformed Catering Staff"
-    ],
-    featuresHi: [
-      "पारंपरिक शुद्ध देशी घी की मिठाइयाँ व डिज़र्ट्स",
-      "लाइव दिल्ली-6 एवं बनारसी चाट स्ट्रीट काउंटर्स",
-      "अवधी, मुग़लई व दक्षिण भारतीय भव्य बुफे",
-      "100% हाइजीनिक एवं यूनिफ़ॉर्म्ड कैटरिंग स्टाफ"
-    ]
-  },
-  {
-    id: "corporate",
-    number: "04",
-    title: "Sprawling Lawns & Estates",
-    titleHi: "भव्य लॉन, वेन्यू एवं थीम उत्सव",
-    subtitle: "Open Lawns, Poolside Haldi & Banquets",
-    subtitleHi: "ओपन लॉन, पूलसाइड हल्दी व बैंक्वेट",
-    description: "Lush expansive green venues for outdoor pheras, cocktail evenings, poolside haldi ceremonies, and luxury guest hospitality with 100+ room accommodations.",
-    descriptionHi: "ओपन एयर फेरे, कॉकटेल नाइट्स, पूलसाइड हल्दी और भव्य पारिवारिक सम्मेलनों हेतु विशाल लॉन व बैंक्वेट सुविधाएं।",
+    theme: "Living Celebration",
+    subtitle: "Living Celebration",
+    title: "The Laughter. The Chaos. The People.",
+    caption: "Flower showers, proud parents, and family love that echoes forever.",
+    description: "Flower showers, proud parents, and family love that echoes forever.",
     image: "/events/laughter-chaos-love.jpg",
-    features: [
-      "40,000+ Sq.Ft Landscaped Lawns & Gazebos",
-      "Poolside Mehendi & Vibrant Haldi Setups",
-      "Concert Lighting Truss & Synchronized Audio FX",
-      "VIP Hospitality Concierge & Guest Escort Fleet"
-    ],
-    featuresHi: [
-      "40,000+ वर्गफीट हरा-भरा लैंडस्केप लॉन",
-      "पूलसाइड मेहंदी एवं हल्दी डेकोर",
-      "सिंक्रोनाइज़्ड कॉन्सर्ट लाइट व साउंड",
-      "वीआईपी हॉस्पिटैलिटी एवं गेस्ट एस्कॉर्ट"
-    ]
+    dialogue: "Surrounded by the ones who watched you grow. Joyous applause, tears of pride, and blessings raining down like starlight.",
+    tagline: "Family Ties, Grand Receptions & Timeless Laughter",
+    decor: "Grand royal reception stage, imperial velvet seating lounge, crystal chandeliers, and monumental floral entrance gates.",
+    culinary: "Lavish multi-regional grand buffet featuring live tandoor, authentic regional delicacies, and royal mithai platters.",
+    hospitality: "VIP guest logistics desks, luggage assistance, personalized room hampers, and full guest concierge.",
+    guestCapacity: "500 to 3,000+ Guests",
+    occasion: "Royal Wedding & Mandap Setup"
   },
   {
-    id: "housewarming",
+    id: "story-4",
+    number: "04",
+    theme: "Corporate Galas",
+    subtitle: "Corporate Galas",
+    title: "Executive Summits & Brand Galas",
+    caption: "Immaculate staging, synchronized acoustics, and gourmet banquet hospitality.",
+    description: "Immaculate staging, synchronized acoustics, and gourmet banquet hospitality.",
+    image: "https://images.unsplash.com/photo-1511578314322-379afb476865?q=80&w=1200&auto=format&fit=crop",
+    dialogue: "From high-level executive summits to grand corporate anniversary galas in Bhilai, Raipur, and Durg — immaculate staging, synchronized acoustics, and seamless 5-star hospitality.",
+    tagline: "Executive Summits & Prestigious Brand Galas",
+    decor: "Immaculate executive stage architecture, digital podiums, synchronized acoustics, and branded networking lounges.",
+    culinary: "Five-star executive seated dinners, continental lunch buffets, live artisan coffee bar, and gourmet high-tea.",
+    hospitality: "Delegate check-in registration desks, green room VIP logistics, and professional teleprompter management.",
+    guestCapacity: "100 to 1,500+ Delegates",
+    occasion: "Corporate & Theme Galas"
+  },
+  {
+    id: "story-5",
     number: "05",
-    title: "Housewarming & Sacred Rituals",
-    titleHi: "गृह प्रवेश एवं धार्मिक अनुष्ठान",
-    subtitle: "Griha Pravesh, Ramotsav & Bhajan Sandhya",
-    subtitleHi: "गृह प्रवेश, रामोत्सव व भजन संध्या",
-    description: "Auspicious temple-style pandals, brass diya illuminations, fresh marigold and jasmine installations, accompanied by pure satvik prasadam catering.",
-    descriptionHi: "पवित्र मंदिर शैली पंडाल, पीतल दीयों की जगमगाहट, गेंदे व चमेली फूलों का भव्य श्रृंगार, एवं 100% शुद्ध सात्विक प्रसादम कैटरिंग।",
-    image: "/src/assets/housewarming_event.jpg",
-    features: [
-      "Sacred Pandal Decor & Fresh Jasmine Singhasan",
-      "108 Brass Deepam Illumination & Diya Setups",
-      "100% Pure Satvik Prasadam (No Onion / Garlic)",
-      "Devotional Sound & Traditional Seating Arrangement"
-    ],
-    featuresHi: [
-      "पवित्र पंडाल डेकोर एवं ताजे फूलों का सिंहासन",
-      "108 पीतल दीप प्रज्वलन व भव्य दीया सज्जा",
-      "100% शुद्ध सात्विक प्रसादम (बिना प्याज-लहसुन)",
-      "भक्ति संगीत साउंड एवं पारंपरिक बैठक व्यवस्था"
-    ]
-  },
-  {
-    id: "cinematic",
-    number: "06",
-    title: "Cinematic Films & Royal Photography",
-    titleHi: "सिनेमैटिक फ़िल्म्स एवं शाही फोटोग्राफी",
-    subtitle: "Drone Telecast, Pre-Weddings & Albums",
-    subtitleHi: "ड्रोन टेलीकास्ट, प्री-वेडिंग व लेदर एल्बम",
-    description: "Candid, cinematic, and emotional wedding documentation capturing authentic tears, laughter, and rituals that outlive generations.",
-    descriptionHi: "कैंडिड व सिनेमैटिक वेडिंग फोटोग्राफी, ड्रोन कवरेज, प्री-वेडिंग शूट्स और 4K लाइव स्ट्रीमिंग व्यवस्था।",
-    image: "/events/timeless-stories-editorial.jpg",
-    features: [
-      "4K Ultra-HD Multi-Cam Live Video Telecast",
-      "Cinematic Teaser & Full Wedding Heritage Film",
-      "Aerial Drone Coverage & Pre-Wedding Shoots",
-      "Handcrafted Leather Bound Royal Photo Album"
-    ],
-    featuresHi: [
-      "4K अल्ट्रा-एचडी मल्टी-कैमरा लाइव टेलीकास्ट",
-      "सिनेमैटिक टीज़र एवं सम्पूर्ण वेडिंग हेरिटेज फ़िल्म",
-      "एरियल ड्रोन कवरेज व प्री-वेडिंग शूट्स",
-      "हैंडक्राफ्टेड लेदर बाउंड रॉयल फ़ोटो एल्बम"
-    ]
+    theme: "Housewarming Party",
+    subtitle: "Housewarming Party",
+    title: "Warmth of a Sacred Abode",
+    caption: "Traditional havan setups, auspicious floral doorways, and heartfelt family feasts.",
+    description: "Traditional havan setups, auspicious floral doorways, and heartfelt family feasts.",
+    image: "/events/housewarming_event.jpg",
+    dialogue: "Blessing your new residence with sacred Vedic rituals, fragrant marigold torans, intimate courtyard seating, and pure celebratory dining.",
+    tagline: "Warmth of a Sacred Abode & Vedic Griha Pravesh",
+    decor: "Sacred brass havan kund setup, fragrant mango leaf & marigold entrance doorways, and intimate courtyard seating.",
+    culinary: "Satvik royal festive feast prepared in 100% pure desi ghee, festive prashad, traditional Chhattisgarhi and North Indian delicacies.",
+    hospitality: "Courtyard shamiana draping, footwear management, and customized brass/silver auspicious gift packing.",
+    guestCapacity: "50 to 500+ Honored Relatives",
+    occasion: "Housewarming & Spiritual Ceremonies"
   }
 ];
 

@@ -50,6 +50,11 @@ async function postToSheet(payload) {
  * Create a new Farmaan Lead in Google Sheets
  */
 export async function syncCreateLead(lead) {
+  // Defensive verification: Prevent bots or malformed numbers from hitting Google Sheets API
+  if (lead._isBot || lead.botTrap || (lead.phone && !/^[6-9]\d{9}$/.test(lead.phone.replace(/\D/g, '')))) {
+    console.warn('[Security] Bot or malformed lead rejected prior to Google Sheets post.');
+    return false;
+  }
   return postToSheet({
     sheetName: 'Leads',
     action: 'CREATE',

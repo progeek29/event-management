@@ -45,13 +45,23 @@ export default function App() {
     return () => window.removeEventListener('hashchange', handleHash);
   }, [currentView]);
 
-  // Customizable Services state
+  // Dynamic Website Offerings / Services State (Managed by Admin, dynamic cards)
   const [services, setServices] = useState(() => {
     try {
       const saved = localStorage.getItem('sre_services_data');
       if (saved) {
         const parsed = JSON.parse(saved);
-        if (Array.isArray(parsed) && parsed.length >= 6) return parsed;
+        if (Array.isArray(parsed) && parsed.length > 0) {
+          // Check if saved data contains old stale categories or photography
+          const hasOldStaleData = parsed.some(
+            (s) =>
+              s.id === 'cinematic' ||
+              s.id === 'catering' ||
+              s.id === 'weddings' ||
+              (s.title && s.title.toLowerCase().includes('photography'))
+          );
+          if (!hasOldStaleData) return parsed;
+        }
       }
       return BANNER_SERVICES;
     } catch {
@@ -169,10 +179,86 @@ export default function App() {
     loadSheetData();
   }, []);
 
-  // Lead handling (Local State + Google Sheets Sync)
+  // Lead handling (Smart Deduplication & Event History Preservation + Top Re-Order)
   const handleLeadCreated = (newLead) => {
-    setLeads((prev) => [newLead, ...prev]);
-    syncCreateLead(newLead);
+    const cleanNewPhone = (newLead.phone || '').replace(/\D/g, '').slice(-10);
+
+    setLeads((prev) => {
+      // Check if an inquiry with the same 10-digit mobile number already exists
+      const existingIndex = prev.findIndex((l) => {
+        const cleanExistingPhone = (l.phone || '').replace(/\D/g, '').slice(-10);
+        return cleanExistingPhone === cleanNewPhone && cleanNewPhone.length === 10;
+      });
+
+      if (existingIndex !== -1) {
+        const existing = prev[existingIndex];
+
+        // Preserve full event history so previous bookings are never lost
+        const previousHistory = Array.isArray(existing.eventHistory)
+          ? existing.eventHistory
+          : [
+              {
+                date: existing.eventDate,
+                occasion: existing.occasion,
+                guestCount: existing.guestCount,
+                city: existing.city,
+                recordedAt: existing.dateSubmitted
+              }
+            ];
+
+        // Check if this is a new occasion or date
+        const isDifferentEvent = existing.occasion !== newLead.occasion || existing.eventDate !== newLead.eventDate;
+        const updatedHistory = isDifferentEvent
+          ? [
+              {
+                date: existing.eventDate,
+                occasion: existing.occasion,
+                guestCount: existing.guestCount,
+                city: existing.city,
+                recordedAt: existing.dateSubmitted
+              },
+              ...previousHistory.filter(h => !(h.date === existing.eventDate && h.occasion === existing.occasion))
+            ]
+          : previousHistory;
+
+        // Build comprehensive notes preserving past notes and new celebration details
+        let compiledNotes = newLead.notes || '';
+        if (isDifferentEvent) {
+          compiledNotes = `[New Request: ${newLead.occasion} on ${newLead.eventDate} (${newLead.guestCount || 'Guests'})]\n${newLead.notes || ''}\n\n[Previous History]: ${existing.occasion} on ${existing.eventDate} (${existing.guestCount || 'Guests'} in ${existing.city}).`;
+          if (existing.notes && !compiledNotes.includes(existing.notes)) {
+            compiledNotes += `\nPast Notes: ${existing.notes}`;
+          }
+        } else if (existing.notes && existing.notes !== newLead.notes) {
+          compiledNotes = `${newLead.notes || ''} (Updated). Prior: ${existing.notes}`;
+        }
+
+        const updatedLead = {
+          ...existing,
+          clientName: newLead.clientName || existing.clientName,
+          phone: newLead.phone,
+          occasion: newLead.occasion,
+          eventDate: newLead.eventDate,
+          guestCount: newLead.guestCount,
+          city: newLead.city || existing.city,
+          dateSubmitted: newLead.dateSubmitted, // Fresh timestamp
+          status: 'New / Updated', // Immediately signals new request to admin
+          notes: compiledNotes,
+          eventHistory: updatedHistory,
+          repeatClient: true
+        };
+
+        // Sync update to Google Sheets
+        syncUpdateLeadStatus(updatedLead);
+
+        // Bring to the VERY TOP of the list!
+        const remaining = prev.filter((_, idx) => idx !== existingIndex);
+        return [updatedLead, ...remaining];
+      }
+
+      // Brand new phone number
+      syncCreateLead(newLead);
+      return [newLead, ...prev];
+    });
   };
 
   const handleUpdateStatus = (leadId, newStatus) => {
@@ -218,6 +304,20 @@ export default function App() {
   const handleAddService = (newService) => {
     setServices((prev) => [...prev, newService]);
     syncCreateOffering(newService);
+  };
+
+  const handleDeleteService = (serviceId) => {
+    setServices((prev) => {
+      const remaining = prev.filter((s) => s.id !== serviceId);
+      return remaining.map((s, idx) => ({
+        ...s,
+        number: String(idx + 1).padStart(2, '0')
+      }));
+    });
+  };
+
+  const handleReorderServices = (reorderedServices) => {
+    setServices(reorderedServices);
   };
 
   // Navigation handlers
@@ -291,6 +391,8 @@ export default function App() {
           services={services}
           onUpdateService={handleUpdateService}
           onAddService={handleAddService}
+          onDeleteService={handleDeleteService}
+          onReorderServices={handleReorderServices}
         />
       )}
 
@@ -311,7 +413,7 @@ export default function App() {
               onNavigateToReservation={navigateToReservation}
             />
 
-            {/* II. The 6 Photographic Stories — Sacred Union */}
+            {/* II. The Photographic Stories — Sacred Union (Dynamic Offerings) */}
             <div id="moments">
               <EditorialStorySection
                 services={services}
