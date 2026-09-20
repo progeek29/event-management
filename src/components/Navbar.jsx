@@ -26,23 +26,26 @@ export default function Navbar({ onOpenAdmin, onNavigateToReservation }) {
       {/* Main Masthead Navigation */}
       <nav
         className={`w-full transition-all duration-500 ${isScrolled
-            ? 'bg-white/95 backdrop-blur-md py-3.5 border-b border-[#8C7355]/20 shadow-xs'
-            : 'bg-[#FAF7F2]/85 backdrop-blur-sm py-4 border-b border-[#8C7355]/15'
+            ? 'bg-white/95 backdrop-blur-md py-2.5 sm:py-3.5 border-b border-[#8C7355]/20 shadow-xs'
+            : 'bg-[#FAF7F2]/90 backdrop-blur-sm py-3 sm:py-4 border-b border-[#8C7355]/15'
           }`}
       >
         <div className="site-container flex items-center justify-between">
 
           {/* Brand Wordmark with Crest */}
-          <a href="#" className="flex items-center gap-3.5 group">
-            <div className="w-9 h-9 rounded-full border border-[#8C7355]/50 flex items-center justify-center font-serif text-lg italic text-[#8C7355] bg-white group-hover:bg-[#8C7355] group-hover:text-white transition-all shadow-2xs">
+          <a href="#" className="flex items-center gap-2.5 sm:gap-3.5 group shrink-0">
+            <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-full border border-[#8C7355]/50 flex items-center justify-center font-serif text-base sm:text-lg italic text-[#8C7355] bg-white group-hover:bg-[#8C7355] group-hover:text-white transition-all shadow-2xs shrink-0">
               SR
             </div>
             <div className="flex flex-col">
-              <span className="font-serif text-xl sm:text-2xl font-light tracking-[0.2em] text-[#1C1A18] group-hover:text-[#8C7355] transition-colors leading-none">
+              <span className="font-serif text-lg sm:text-2xl font-light tracking-[0.16em] sm:tracking-[0.2em] text-[#1C1A18] group-hover:text-[#8C7355] transition-colors leading-none">
                 SHREE RAM
               </span>
-              <span className="text-[8px] sm:text-[9px] uppercase tracking-[0.32em] text-[#706860] mt-1">
-                Royal Celebrations & Atelier · Bhilai
+              <span className="hidden sm:block text-[8.5px] sm:text-[9.5px] uppercase tracking-[0.24em] text-[#706860] mt-1 whitespace-nowrap">
+                Royal Celebrations · Bhilai
+              </span>
+              <span className="sm:hidden text-[7.5px] uppercase tracking-[0.2em] text-[#8C7355] mt-0.5 font-medium whitespace-nowrap">
+                Royal Celebrations · Bhilai
               </span>
             </div>
           </a>
@@ -80,20 +83,14 @@ export default function Navbar({ onOpenAdmin, onNavigateToReservation }) {
             </button>
           </div>
 
-          {/* Mobile Menu Button */}
-          <div className="flex md:hidden items-center gap-3">
-            <button
-              onClick={() => onNavigateToReservation()}
-              className="px-3.5 py-1.5 rounded-full bg-[#1C1A18] text-[#FAF7F2] text-[10px] uppercase tracking-widest font-semibold"
-            >
-              Date
-            </button>
+          {/* Mobile Menu Button — Clean & Spacious */}
+          <div className="flex md:hidden items-center">
             <button
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className="p-1.5 text-[#1C1A18] focus:outline-none cursor-pointer"
+              className="p-2 text-[#1C1A18] hover:text-[#8C7355] focus:outline-none cursor-pointer rounded-lg active:scale-95 transition-all"
               aria-label="Toggle navigation"
             >
-              {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+              {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
             </button>
           </div>
 
