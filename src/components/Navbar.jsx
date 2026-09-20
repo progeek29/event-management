@@ -61,16 +61,7 @@ export default function Navbar({ onOpenAdmin, onNavigateToReservation }) {
           </div>
 
           {/* Right Actions */}
-          <div className="hidden md:flex items-center gap-3 lg:gap-4">
-            <a
-              href={`tel:${BRAND_INFO.contacts[0].phone}`}
-              className="inline-flex items-center gap-1.5 text-xs text-[#706860] hover:text-[#8C7355] transition-colors font-medium mr-1"
-              title="Call Us Directly"
-            >
-              <Phone className="w-3.5 h-3.5 text-[#8C7355]" />
-              <span className="hidden lg:inline">{BRAND_INFO.contacts[0].phoneDisplay}</span>
-            </a>
-
+          <div className="hidden md:flex items-center gap-4">
             <a
               href={`https://wa.me/${BRAND_INFO.contacts[0].whatsapp}?text=Hello%20Shree%20Ram%20Events,%20I%20would%20like%20to%20check%20our%20wedding%20date%20availability.`}
               target="_blank"

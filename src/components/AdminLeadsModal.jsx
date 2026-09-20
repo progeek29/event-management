@@ -641,7 +641,7 @@ export default function AdminLeadsModal({
                   </label>
                   <input
                     type="text"
-                    placeholder="e.g. admin or shreeram"
+                    placeholder="Enter admin username"
                     value={adminId}
                     onChange={(e) => setAdminId(e.target.value)}
                     className="w-full px-4 py-3 rounded-md border border-[#E9DCC0] bg-[#FFFDF9] text-sm text-[#1A1A1A] placeholder:text-[#C7BEAF] focus:outline-none focus:border-[#C9A86A] focus:ring-1 focus:ring-[#C9A86A]/20 transition-all font-medium"
