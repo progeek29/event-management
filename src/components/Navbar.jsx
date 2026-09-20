@@ -23,39 +23,6 @@ export default function Navbar({ onOpenAdmin, onNavigateToReservation }) {
 
   return (
     <header className="fixed top-0 left-0 right-0 z-50 transition-all duration-500 w-full font-sans">
-      {/* Top Sacred Micro-Note — Perfectly Centered */}
-      <div className="bg-[#1C1A18] text-[#C5A880] text-[10px] sm:text-[11px] py-1.5 px-4 sm:px-8 tracking-[0.24em] uppercase relative flex items-center justify-center border-b border-[#8C7355]/20">
-        <div className="flex items-center justify-center gap-2.5 text-center">
-          <span className="font-serif text-xs sm:text-sm tracking-widest text-[#FAF7F2]">
-            ॥ श्री गणेशाय नमः ॥
-          </span>
-          <span className="text-[#8C7355]/50 hidden sm:inline">•</span>
-          <span className="text-[#C5A880] tracking-[0.22em] hidden sm:inline">
-            Royal Weddings & Grand Celebrations · Chhattisgarh
-          </span>
-        </div>
-
-        <div className="absolute right-4 sm:right-8 hidden md:flex items-center gap-5 text-[11px] tracking-wider text-[#A39688]">
-          <a
-            href={`tel:${BRAND_INFO.contacts[0].phone}`}
-            className="hover:text-[#C5A880] transition-colors flex items-center gap-1.5 text-[#C5A880]"
-          >
-            <Phone className="w-3 h-3 text-[#8C7355]" />
-            <span>{BRAND_INFO.contacts[0].phoneDisplay}</span>
-          </a>
-          <span className="text-white/20">|</span>
-          <button
-            type="button"
-            onClick={onOpenAdmin}
-            className="hover:text-[#C5A880] transition-colors flex items-center gap-1 cursor-pointer text-[#A39688]"
-            title="Open Admin Portal"
-          >
-            <Lock className="w-3 h-3 text-[#8C7355]" />
-            <span className="text-[10px] tracking-widest uppercase">Admin</span>
-          </button>
-        </div>
-      </div>
-
       {/* Main Masthead Navigation */}
       <nav
         className={`w-full transition-all duration-500 ${isScrolled
@@ -94,7 +61,16 @@ export default function Navbar({ onOpenAdmin, onNavigateToReservation }) {
           </div>
 
           {/* Right Actions */}
-          <div className="hidden md:flex items-center gap-4">
+          <div className="hidden md:flex items-center gap-3 lg:gap-4">
+            <a
+              href={`tel:${BRAND_INFO.contacts[0].phone}`}
+              className="inline-flex items-center gap-1.5 text-xs text-[#706860] hover:text-[#8C7355] transition-colors font-medium mr-1"
+              title="Call Us Directly"
+            >
+              <Phone className="w-3.5 h-3.5 text-[#8C7355]" />
+              <span className="hidden lg:inline">{BRAND_INFO.contacts[0].phoneDisplay}</span>
+            </a>
+
             <a
               href={`https://wa.me/${BRAND_INFO.contacts[0].whatsapp}?text=Hello%20Shree%20Ram%20Events,%20I%20would%20like%20to%20check%20our%20wedding%20date%20availability.`}
               target="_blank"

@@ -2,6 +2,16 @@
 
 All notable changes and version milestones for the **Shree Ram Events & Royal Hospitality Portal** are documented in this dossier.
 
+## [Version 1.2.1] — 2026-09-20
+### 🌟 The Story & Core Highlights:
+- **Clean Luxury Masthead (Top Line Removed)**:
+  - *Problem Solved*: The top black micro-announcement bar was cluttering the hero section and exposing an explicit "Admin" lock button directly to wedding patrons.
+  - *Solution*: Removed the top micro-line for a pristine, full-height header experience. Integrated direct phone connectivity seamlessly into the desktop navigation bar.
+- **Admin Privacy & Zero Credential Leakage**:
+  - *Problem Solved*: The Admin login screen previously showed `Default credentials: ID: admin | Pass: shreeram@1111` in public view, posing a clear privacy/security flaw.
+  - *Solution*: Removed default credentials helper text entirely from the UI and sanitized the error message to `Invalid Admin ID or Password. Access denied.`
+  - *Discreet Admin Access*: Maintained discreet, secure portal entry through the Footer portal link and direct `#admin` URL navigation.
+
 ---
 
 ## [Version 1.2.0] — 2026-09-20 (Commit: `12e4189`)
