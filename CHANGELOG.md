@@ -2,6 +2,19 @@
 
 All notable changes and version milestones for the **Shree Ram Events & Royal Hospitality Portal** are documented in this dossier.
 
+## [Version 1.2.1] — 2026-09-20
+### 🌟 The Story & Core Highlights:
+- **Clean Luxury Masthead (Top Bar & Redundant Numbers Removed)**:
+  - *Problem Solved*: The top black micro-announcement bar was cluttering the hero section and exposing an explicit "Admin" lock button directly to wedding patrons.
+  - *Solution*: Removed the top micro-line completely. Kept the desktop navigation clean and uncluttered with only Brand Crest, Nav Links, WhatsApp, and Check Date.
+- **Hero Vertical Spacing Proportions**:
+  - *Problem Solved*: Excessive top padding (`pt-24 sm:pt-28`) and `my-auto` caused a huge dead space gap between the navbar and the "FOUND YOUR PERFECT SOULMATE" badge.
+  - *Solution*: Tightened top spacing so the soulmate badge and display headline sit close and gracefully beneath the masthead.
+- **Admin Privacy & Zero Credential Leakage**:
+  - *Problem Solved*: Admin login modal displayed `Default credentials: ID: admin | Pass: shreeram@1111` and placeholder `e.g. admin or shreeram` in public view.
+  - *Solution*: Removed all credential text, updated the username placeholder to standard `Enter admin username`, and sanitized failed login errors to `Invalid Admin ID or Password. Access denied.`
+  - *Discreet Admin Access*: Maintained discreet, secure portal entry through the Footer portal link and direct `#admin` URL navigation.
+
 ---
 
 ## [Version 1.2.0] — 2026-09-20 (Commit: `12e4189`)

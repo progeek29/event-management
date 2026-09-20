@@ -4,7 +4,7 @@ import { BRAND_INFO } from '../data/initialData';
 
 export default function Hero({ onNavigateToReservation }) {
   return (
-    <section className="relative w-full min-h-[80vh] flex flex-col justify-between overflow-hidden pt-24 sm:pt-28 pb-6 sm:pb-8 bg-[#FAF7F2]">
+    <section className="relative w-full flex flex-col justify-between overflow-hidden pt-4 sm:pt-6 pb-6 sm:pb-8 bg-[#FAF7F2]">
 
       {/* Editorial Daylight Photo Background with Gentle Luminance */}
       <div
@@ -16,7 +16,7 @@ export default function Hero({ onNavigateToReservation }) {
       <div className="absolute inset-0 bg-gradient-to-b from-[#FAF7F2]/95 via-[#FAF7F2]/70 to-[#FAF7F2] pointer-events-none" />
 
       {/* Main Centered Editorial Content */}
-      <div className="site-container relative z-10 flex-1 flex flex-col items-center justify-center text-center my-auto">
+      <div className="site-container relative z-10 flex-1 flex flex-col items-center justify-center text-center my-3 sm:my-5">
 
         {/* Subtle Diamond Soulmate Tag */}
         <div className="inline-flex items-center gap-2.5 px-4 py-1.5 rounded-full border border-[#8C7355]/30 bg-white/85 backdrop-blur-xs mb-5 shadow-2xs">

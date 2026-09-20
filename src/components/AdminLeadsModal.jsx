@@ -271,7 +271,7 @@ export default function AdminLeadsModal({
       setAdminId('');
       setAdminPassword('');
     } else {
-      setAuthError('Invalid Admin ID or Password. Default: ID "admin", Pass "shreeram@1111"');
+      setAuthError('Invalid Admin ID or Password. Access denied.');
     }
   };
 
@@ -641,7 +641,7 @@ export default function AdminLeadsModal({
                   </label>
                   <input
                     type="text"
-                    placeholder="e.g. admin or shreeram"
+                    placeholder="Enter admin username"
                     value={adminId}
                     onChange={(e) => setAdminId(e.target.value)}
                     className="w-full px-4 py-3 rounded-md border border-[#E9DCC0] bg-[#FFFDF9] text-sm text-[#1A1A1A] placeholder:text-[#C7BEAF] focus:outline-none focus:border-[#C9A86A] focus:ring-1 focus:ring-[#C9A86A]/20 transition-all font-medium"
@@ -687,12 +687,6 @@ export default function AdminLeadsModal({
                 >
                   Authenticate & Enter Vault
                 </button>
-
-                <div className="text-center pt-2">
-                  <span className="text-[10.5px] text-[#8A7E6D] font-mono block">
-                    Default credentials: ID: <strong className="text-[#1A1A1A] font-semibold">admin</strong> | Pass: <strong className="text-[#1A1A1A] font-semibold">shreeram@1111</strong>
-                  </span>
-                </div>
               </form>
             </div>
 
