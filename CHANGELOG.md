@@ -2,6 +2,18 @@
 
 All notable changes and version milestones for the **Shree Ram Events & Royal Hospitality Portal** are documented in this dossier.
 
+## [Version 1.2.2] — 2026-09-21
+### 🌟 The Story & Core Highlights:
+- **Studio Ultra-HD Google Drive Photo Vault**:
+  - *Problem Solved*: Direct photo uploads from phone/computer were only stored in browser `localStorage` and could not fit into Google Sheet cells due to the 50,000 character limit.
+  - *Solution*: Integrated direct Google Drive upload via Google Apps Script. Uploads are saved into a private `"Shree Ram Events Gallery"` folder, and official high-speed Google CDN links (`https://lh3.googleusercontent.com/d/...`) are stored in the `Offerings` tab.
+  - *Studio Ultra-HD Preservation*: Upgraded image handling to 2.5K/QHD (2560px) at 0.94 studio-grade photographic quality with a zero-touch rule for files under 3MB. Zero blur or pixelation on 4K & Retina displays.
+- **Spreadsheet 3-Tab Architecture Complete**:
+  - Initialized and populated all three tabs in the Google Spreadsheet: `Leads` (Farmaan Inquiries), `Financials` (Event Ledger & Net Margins), and `Offerings` (Standee Services & Master Stories).
+  - Robust dual-key sync support (`data.offerings || data.services`) preventing data desynchronization.
+
+---
+
 ## [Version 1.2.1] — 2026-09-20
 ### 🌟 The Story & Core Highlights:
 - **Clean Luxury Masthead (Top Bar & Redundant Numbers Removed)**:

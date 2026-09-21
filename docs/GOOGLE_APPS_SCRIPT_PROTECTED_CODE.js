@@ -1,173 +1,167 @@
-/**
- * SHREE RAM EVENTS — ENTERPRISE PROTECTED GOOGLE APPS SCRIPT
- * 
- * 100% Bot-Proof & Direct-Hit Shield:
- * 1. Requires secret handshake authToken: "SRE_ROYAL_VAULT_KEY_2026"
- * 2. Neutralizes honeypot bot traps silently
- * 3. Enforces valid 10-digit Indian mobile numbers
- * 4. Deduplicates repeat client inquiries (updates existing row instead of duplicate clutter)
- * 5. Handles Leads, Financials, and Services tabs
- */
+// =========================================================================
+// SHREE RAM EVENTS — ROYAL SECURE APPS SCRIPT WEBHOOK & GOOGLE DRIVE VAULT
+// =========================================================================
 
-var SECRET_AUTH_TOKEN = "SRE_ROYAL_VAULT_KEY_2026";
+const VAULT_SECRET_KEY = "SRE_ROYAL_VAULT_KEY_2026";
 
 function doGet(e) {
-  var ss = SpreadsheetApp.getActiveSpreadsheet();
-  var leadsSheet = ss.getSheetByName("Leads");
-  var finSheet = ss.getSheetByName("Financials");
-  var servSheet = ss.getSheetByName("Offerings");
-
-  var leads = leadsSheet ? leadsSheet.getDataRange().getValues() : [];
-  var financials = finSheet ? finSheet.getDataRange().getValues() : [];
-  var services = servSheet ? servSheet.getDataRange().getValues() : [];
-
-  var result = {
-    leads: leads,
-    financials: financials,
-    services: services
-  };
-
-  return ContentService.createTextOutput(JSON.stringify(result))
+  const sheet = SpreadsheetApp.getActiveSpreadsheet();
+  const leads = sheet.getSheetByName("Leads") ? sheet.getSheetByName("Leads").getDataRange().getValues() : [];
+  const financials = sheet.getSheetByName("Financials") ? sheet.getSheetByName("Financials").getDataRange().getValues() : [];
+  const offerings = sheet.getSheetByName("Offerings") ? sheet.getSheetByName("Offerings").getDataRange().getValues() : [];
+  
+  return ContentService.createTextOutput(JSON.stringify({ leads, financials, offerings }))
     .setMimeType(ContentService.MimeType.JSON);
 }
 
 function doPost(e) {
   try {
     if (!e || !e.postData || !e.postData.contents) {
-      return errorResponse("Empty payload");
+      return ContentService.createTextOutput(JSON.stringify({ status: "error", message: "Empty request" }))
+        .setMimeType(ContentService.MimeType.JSON);
     }
 
-    var data = JSON.parse(e.postData.contents);
+    const data = JSON.parse(e.postData.contents);
 
-    // LAYER 1: Secret Handshake Token Verification
-    // Rejects scrapers, cURL, or bots hitting this Webhook URL directly!
-    if (!data.authToken || data.authToken !== SECRET_AUTH_TOKEN) {
-      return errorResponse("Unauthorized access attempt blocked.");
+    // -------------------------------------------------------------
+    // SHIELD 1: Secret Handshake Token Check (Blocks Direct URL Bots)
+    // -------------------------------------------------------------
+    if (!data.authToken || data.authToken !== VAULT_SECRET_KEY) {
+      return ContentService.createTextOutput(JSON.stringify({ status: "error", message: "Unauthorized: Invalid secret key" }))
+        .setMimeType(ContentService.MimeType.JSON);
     }
 
-    // LAYER 2: Honeypot Trap Detection
-    if (data.botTrap && data.botTrap.toString().trim().length > 0) {
-      // Silently return success to fool the bot without touching the spreadsheet
-      return successResponse("Lead processed.");
+    // -------------------------------------------------------------
+    // SHIELD 2: Invisible Honeypot Trap Detection
+    // -------------------------------------------------------------
+    if (data.botTrap || data.royal_farmaan_trap || data.company_website) {
+      // Fool the bot by returning success without touching the sheet
+      return ContentService.createTextOutput(JSON.stringify({ status: "success", message: "Filtered" }))
+        .setMimeType(ContentService.MimeType.JSON);
     }
 
-    var ss = SpreadsheetApp.getActiveSpreadsheet();
-    var sheetName = data.sheetName || "Leads";
-    var sheet = ss.getSheetByName(sheetName);
-
-    if (!sheet) {
-      sheet = ss.insertSheet(sheetName);
+    // -------------------------------------------------------------
+    // SHIELD 3: Google Drive Ultra-HD Photo Vault (Free & Permanent)
+    // -------------------------------------------------------------
+    if (data.action === "UPLOAD_IMAGE") {
+      return handleImageUpload(data);
     }
 
-    var action = data.action || "CREATE";
+    const sheet = SpreadsheetApp.getActiveSpreadsheet();
+    const sheetName = data.sheetName || "Leads";
+    const targetSheet = sheet.getSheetByName(sheetName) || sheet.insertSheet(sheetName);
 
-    if (sheetName === "Leads") {
-      return handleLeads(sheet, action, data);
-    } else {
-      return handleStandardCRUD(sheet, action, data);
+    if (data.action === "CREATE") {
+      // -------------------------------------------------------------
+      // SHIELD 4: Repeat Patron Deduplication (Leads Sheet)
+      // -------------------------------------------------------------
+      if (sheetName === "Leads" && data.row && data.row.length >= 4) {
+        const newPhone = String(data.row[3] || '').replace(/\D/g, '');
+        const values = targetSheet.getDataRange().getValues();
+        let existingRowIndex = -1;
+
+        // Check if phone number already exists (skipping header row)
+        if (newPhone.length === 10) {
+          for (let i = 1; i < values.length; i++) {
+            const existingPhone = String(values[i][3] || '').replace(/\D/g, '');
+            if (existingPhone === newPhone) {
+              existingRowIndex = i + 1; // 1-indexed for Sheets
+              break;
+            }
+          }
+        }
+
+        // If repeat patron found: Update row & preserve event history
+        if (existingRowIndex !== -1) {
+          const oldOccasion = values[existingRowIndex - 1][4] || 'Previous Celebration';
+          const oldNotes = values[existingRowIndex - 1][9] || '';
+          
+          // Append previous celebration history to notes
+          const updatedNotes = `[Repeat Loyal Patron] Latest: ${data.row[4]} on ${data.row[5]} | Prior: ${oldOccasion}. ${oldNotes}`.trim();
+          data.row[9] = updatedNotes;
+          data.row[8] = 'New / Updated'; // Set status so admin notices immediately
+
+          targetSheet.getRange(existingRowIndex, 1, 1, data.row.length).setValues([data.row]);
+          return ContentService.createTextOutput(JSON.stringify({ status: "success", mode: "updated_patron" }))
+            .setMimeType(ContentService.MimeType.JSON);
+        }
+      }
+
+      // If new client or new record: Append normally
+      targetSheet.appendRow(data.row);
+
+    } else if (data.action === "UPDATE") {
+      const values = targetSheet.getDataRange().getValues();
+      for (let i = 1; i < values.length; i++) {
+        if (values[i][0] == data.id) {
+          targetSheet.getRange(i + 1, 1, 1, data.row.length).setValues([data.row]);
+          break;
+        }
+      }
+
+    } else if (data.action === "DELETE") {
+      const values = targetSheet.getDataRange().getValues();
+      for (let i = 1; i < values.length; i++) {
+        if (values[i][0] == data.id) {
+          targetSheet.deleteRow(i + 1);
+          break;
+        }
+      }
     }
+
+    return ContentService.createTextOutput(JSON.stringify({ status: "success" }))
+      .setMimeType(ContentService.MimeType.JSON);
 
   } catch (err) {
-    return errorResponse(err.toString());
+    return ContentService.createTextOutput(JSON.stringify({ status: "error", error: err.toString() }))
+      .setMimeType(ContentService.MimeType.JSON);
   }
 }
 
 /**
- * Smart Lead Management with Deduplication & Top Placement
+ * Saves base64 photo directly into Google Drive "Shree Ram Events Gallery" folder.
+ * Returns official Google direct-view CDN URL for crystal-clear website display.
  */
-function handleLeads(sheet, action, data) {
-  var rowData = data.row;
-  if (!rowData || rowData.length === 0) {
-    return errorResponse("No row data provided");
+function handleImageUpload(data) {
+  if (!data.base64Data) {
+    return ContentService.createTextOutput(JSON.stringify({ status: "error", message: "No image data provided" }))
+      .setMimeType(ContentService.MimeType.JSON);
   }
 
-  // Mobile format validation (must be 10 digits starting with 6-9)
-  var rawPhone = rowData[3] ? rowData[3].toString().replace(/\D/g, "") : "";
-  var cleanPhone = rawPhone.slice(-10);
-  if (cleanPhone.length !== 10 || !/^[6-9]\d{9}$/.test(cleanPhone)) {
-    return errorResponse("Invalid mobile number rejected.");
+  try {
+    const folderName = "Shree Ram Events Gallery";
+    const folders = DriveApp.getFoldersByName(folderName);
+    const folder = folders.hasNext() ? folders.next() : DriveApp.createFolder(folderName);
+    
+    // Ensure anyone with link can view (public CDN view for website visitors)
+    folder.setSharing(DriveApp.Access.ANYONE_WITH_LINK, DriveApp.Permission.VIEW);
+
+    const rawBase64 = data.base64Data.replace(/^data:image\/\w+;base64,/, "");
+    let contentType = "image/jpeg";
+    if (data.base64Data.indexOf("data:image/png") !== -1) contentType = "image/png";
+    else if (data.base64Data.indexOf("data:image/webp") !== -1) contentType = "image/webp";
+
+    const decoded = Utilities.base64Decode(rawBase64);
+    const cleanFileName = (data.fileName || ("event_" + new Date().getTime() + ".jpg")).replace(/[^a-zA-Z0-9._-]/g, "_");
+    const blob = Utilities.newBlob(decoded, contentType, cleanFileName);
+    const file = folder.createFile(blob);
+    
+    file.setSharing(DriveApp.Access.ANYONE_WITH_LINK, DriveApp.Permission.VIEW);
+    const fileId = file.getId();
+
+    // Direct Google CDN image URL that displays instantly in <img> tags
+    const directImageUrl = "https://lh3.googleusercontent.com/d/" + fileId;
+
+    return ContentService.createTextOutput(JSON.stringify({
+      status: "success",
+      url: directImageUrl,
+      fileId: fileId,
+      fileName: file.getName(),
+      message: "Photo successfully saved into Google Drive"
+    })).setMimeType(ContentService.MimeType.JSON);
+
+  } catch (err) {
+    return ContentService.createTextOutput(JSON.stringify({ status: "error", error: "Drive upload error: " + err.toString() }))
+      .setMimeType(ContentService.MimeType.JSON);
   }
-
-  var allData = sheet.getDataRange().getValues();
-  var existingRowIndex = -1;
-
-  // Search existing leads by 10-digit mobile number (Column index 3 = Phone)
-  for (var i = 1; i < allData.length; i++) {
-    var p = allData[i][3] ? allData[i][3].toString().replace(/\D/g, "").slice(-10) : "";
-    if (p === cleanPhone) {
-      existingRowIndex = i + 1; // 1-indexed row in sheet
-      break;
-    }
-  }
-
-  if (action === "CREATE" || action === "UPDATE") {
-    if (existingRowIndex !== -1) {
-      // Patron already exists: Update row with new celebration details
-      sheet.getRange(existingRowIndex, 1, 1, rowData.length).setValues([rowData]);
-      return successResponse("Existing patron inquiry updated successfully.");
-    } else {
-      // Brand new patron: append row
-      sheet.appendRow(rowData);
-      return successResponse("New patron inquiry created successfully.");
-    }
-  } else if (action === "DELETE") {
-    var targetId = data.id;
-    for (var j = 1; j < allData.length; j++) {
-      if (allData[j][0] === targetId) {
-        sheet.deleteRow(j + 1);
-        return successResponse("Lead deleted.");
-      }
-    }
-    return errorResponse("Lead not found to delete.");
-  }
-
-  return errorResponse("Unknown action");
-}
-
-function handleStandardCRUD(sheet, action, data) {
-  var allData = sheet.getDataRange().getValues();
-  var targetId = data.id;
-
-  if (action === "CREATE") {
-    sheet.appendRow(data.row);
-    return successResponse("Record created.");
-  }
-
-  var foundRow = -1;
-  for (var i = 1; i < allData.length; i++) {
-    if (allData[i][0] === targetId) {
-      foundRow = i + 1;
-      break;
-    }
-  }
-
-  if (action === "UPDATE") {
-    if (foundRow !== -1) {
-      sheet.getRange(foundRow, 1, 1, data.row.length).setValues([data.row]);
-      return successResponse("Record updated.");
-    } else {
-      sheet.appendRow(data.row);
-      return successResponse("Record appended.");
-    }
-  }
-
-  if (action === "DELETE") {
-    if (foundRow !== -1) {
-      sheet.deleteRow(foundRow);
-      return successResponse("Record deleted.");
-    }
-    return errorResponse("Record not found to delete.");
-  }
-
-  return errorResponse("Action failed");
-}
-
-function successResponse(msg) {
-  return ContentService.createTextOutput(JSON.stringify({ status: "success", message: msg }))
-    .setMimeType(ContentService.MimeType.JSON);
-}
-
-function errorResponse(msg) {
-  return ContentService.createTextOutput(JSON.stringify({ status: "error", message: msg }))
-    .setMimeType(ContentService.MimeType.JSON);
 }

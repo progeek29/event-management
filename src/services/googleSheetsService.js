@@ -1,7 +1,9 @@
 /**
  * Google Sheets API Service
- * Interacts with deployed Google Apps Script Web App for free database storage.
+ * Interacts with deployed Google Apps Script Web App for free database storage & Google Drive photo vault.
  */
+
+import { compressImage } from '../utils/imageCompressor';
 
 const SCRIPT_URL = import.meta.env.VITE_GOOGLE_SHEET_API_URL || 
   'https://script.google.com/macros/s/AKfycbw4S0JGau6ALKiwK5V2UobAW5aU0ipRZJrMRUj1vbKidxKmqkJZv0zNU3CKSxtFhgEw/exec';
@@ -207,3 +209,61 @@ export async function syncCreateOffering(service) {
     ]
   });
 }
+
+/**
+ * Client-Side Compress & Upload Photo directly to Google Drive via Google Apps Script
+ * Returns public direct-embed CDN URL for website rendering.
+ */
+export async function uploadImageToGoogleDrive(file, onProgress) {
+  if (!SCRIPT_URL) {
+    return { success: false, error: 'Google Apps Script URL is not configured.' };
+  }
+
+  try {
+    if (onProgress) onProgress('compressing');
+    const { dataUrl, compressedSize, originalSize } = await compressImage(file);
+
+    if (onProgress) onProgress('uploading');
+    const securePayload = {
+      authToken: 'SRE_ROYAL_VAULT_KEY_2026',
+      action: 'UPLOAD_IMAGE',
+      base64Data: dataUrl,
+      fileName: file.name || 'royal_event_photo.jpg',
+      timestamp: Date.now()
+    };
+
+    const response = await fetch(SCRIPT_URL, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'text/plain;charset=utf-8'
+      },
+      body: JSON.stringify(securePayload)
+    });
+
+    if (!response.ok) {
+      return { success: false, error: `Upload HTTP error: ${response.status}`, localPreview: dataUrl };
+    }
+
+    const result = await response.json();
+    if (result && result.status === 'success' && result.url) {
+      return {
+        success: true,
+        url: result.url,
+        fileId: result.fileId,
+        compressedSize,
+        originalSize,
+        localPreview: dataUrl
+      };
+    } else {
+      return {
+        success: false,
+        error: result?.message || 'Server did not return a valid Google Drive image URL.',
+        localPreview: dataUrl
+      };
+    }
+  } catch (err) {
+    console.error('[GoogleSheetsService] Image upload error:', err);
+    return { success: false, error: err.message || 'Image upload failed' };
+  }
+}
+

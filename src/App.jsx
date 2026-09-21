@@ -161,8 +161,9 @@ export default function App() {
           if (remoteFin.length > 0) setFinancials(remoteFin);
         }
 
-        if (Array.isArray(data.offerings) && data.offerings.length > 1) {
-          const remoteOff = data.offerings.slice(1).map((row) => ({
+        const offeringsData = data.offerings || data.services;
+        if (Array.isArray(offeringsData) && offeringsData.length > 1) {
+          const remoteOff = offeringsData.slice(1).map((row) => ({
             id: row[0],
             number: row[1],
             title: row[2],

@@ -3,9 +3,10 @@ import {
   X, Lock, Download, Phone, MessageSquare, 
   Trash2, Plus, Eye, EyeOff, Search, Sparkles, Calendar, Clock, CheckCircle2,
   ChevronDown, Check, ArrowLeft, ArrowRight, Edit3, ImagePlus,
-  GripVertical, ArrowUp, ArrowDown, Upload
+  GripVertical, ArrowUp, ArrowDown, Upload, Loader2
 } from 'lucide-react';
 import * as XLSX from 'xlsx';
+import { uploadImageToGoogleDrive } from '../services/googleSheetsService';
 
 // Bespoke Gold & Ivory Filter Dropdown (Replaces native <select>)
 function AdminFilterDropdown({ statusFilter, setStatusFilter, totalCount }) {
@@ -248,6 +249,12 @@ export default function AdminLeadsModal({
     guestCapacity: '300 to 1,500+ Guests',
     occasion: 'Royal Wedding & Mandap Setup'
   });
+
+  // Image Upload to Google Drive State
+  const [isUploadingImage, setIsUploadingImage] = useState(false);
+  const [uploadStatusText, setUploadStatusText] = useState('');
+  const [uploadSuccessMessage, setUploadSuccessMessage] = useState('');
+  const [uploadErrorMessage, setUploadErrorMessage] = useState('');
 
   if (!isOpen) return null;
 
@@ -518,9 +525,16 @@ export default function AdminLeadsModal({
     setOfferingViewMode('list');
   };
 
-  const handleImageFileChange = (e, isEditing = false) => {
+  const handleImageFileChange = async (e, isEditing = false) => {
     const file = e.target.files?.[0];
     if (!file) return;
+
+    setUploadErrorMessage('');
+    setUploadSuccessMessage('');
+    setIsUploadingImage(true);
+    setUploadStatusText('Preparing Studio Ultra-HD photo...');
+
+    // 1. Instant local preview so UI updates without lag
     const reader = new FileReader();
     reader.onload = (uploadEvent) => {
       const dataUrl = uploadEvent.target.result;
@@ -531,6 +545,33 @@ export default function AdminLeadsModal({
       }
     };
     reader.readAsDataURL(file);
+
+    // 2. Upload to Google Drive (via Google Apps Script)
+    try {
+      const result = await uploadImageToGoogleDrive(file, (stage) => {
+        if (stage === 'compressing') setUploadStatusText('Preserving 2.5K Retina Ultra-HD fidelity...');
+        if (stage === 'uploading') setUploadStatusText('Saving Ultra-HD photo to Google Drive "Shree Ram Events Gallery"...');
+      });
+
+      if (result.success && result.url) {
+        // Replace with permanent Google CDN URL
+        if (isEditing) {
+          setEditingService((prev) => ({ ...prev, image: result.url }));
+        } else {
+          setNewServiceData((prev) => ({ ...prev, image: result.url }));
+        }
+        const sizeKb = Math.round((result.compressedSize || 0) / 1024);
+        setUploadSuccessMessage(`✓ Saved to Google Drive in Studio Ultra-HD (${sizeKb} KB)`);
+      } else {
+        console.warn('[ImageUpload] Falling back to local dataUrl:', result.error);
+        setUploadErrorMessage(result.error || 'Saved locally. Ensure latest Google Apps Script is deployed for Drive sync.');
+      }
+    } catch (err) {
+      console.error('[ImageUpload] Error:', err);
+      setUploadErrorMessage('Upload error. Local preview kept.');
+    } finally {
+      setIsUploadingImage(false);
+    }
   };
 
   // Filter leads based on search term and status filter
@@ -1450,19 +1491,51 @@ export default function AdminLeadsModal({
                             </div>
 
                             <div>
-                              <label className="block text-[11px] uppercase tracking-wider font-semibold text-[#8A7E6D] mb-1">
-                                Upload Photo from Computer
-                              </label>
-                              <label className="w-full px-4 py-2.5 border border-dashed border-[#C9A86A] rounded-lg bg-[#FAF4E6]/50 text-[#8C6B28] hover:bg-[#FAF4E6] flex items-center justify-center gap-2 cursor-pointer transition-colors font-medium text-xs">
-                                <Upload className="w-4 h-4" />
-                                <span>Choose Image File...</span>
+                              <div className="flex items-center justify-between mb-1">
+                                <label className="block text-[11px] uppercase tracking-wider font-semibold text-[#8A7E6D]">
+                                  Upload Photo to Google Drive
+                                </label>
+                                <span className="text-[10px] text-[#A67C1E] font-medium">Free & Permanent Cloud Vault</span>
+                              </div>
+                              <label className={`w-full px-4 py-3 border border-dashed rounded-lg flex items-center justify-center gap-2.5 transition-all text-xs font-medium cursor-pointer ${
+                                isUploadingImage 
+                                  ? 'border-[#C9A86A] bg-[#FFF9EE] text-[#8C6B28] cursor-wait animate-pulse' 
+                                  : 'border-[#C9A86A] bg-[#FAF4E6]/50 text-[#8C6B28] hover:bg-[#FAF4E6] hover:border-[#8C6B28]'
+                              }`}>
+                                {isUploadingImage ? (
+                                  <>
+                                    <Loader2 className="w-4 h-4 animate-spin text-[#8C6B28]" />
+                                    <span className="font-semibold">{uploadStatusText || 'Saving to Google Drive...'}</span>
+                                  </>
+                                ) : (
+                                  <>
+                                    <Upload className="w-4 h-4 text-[#8C6B28]" />
+                                    <span>Choose Image from Phone / Computer...</span>
+                                  </>
+                                )}
                                 <input
                                   type="file"
                                   accept="image/*"
+                                  disabled={isUploadingImage}
                                   onChange={(e) => handleImageFileChange(e, offeringViewMode === 'edit')}
                                   className="hidden"
                                 />
                               </label>
+
+                              {/* Upload Status Feedback */}
+                              {uploadSuccessMessage && (
+                                <div className="mt-2 px-3 py-1.5 rounded-md bg-[#EBF7EE] border border-[#A7DFBA] text-[#1D6F42] text-[11px] font-medium flex items-center gap-1.5">
+                                  <span>{uploadSuccessMessage}</span>
+                                </div>
+                              )}
+                              {uploadErrorMessage && (
+                                <div className="mt-2 px-3 py-1.5 rounded-md bg-[#FFF7EE] border border-[#F5C48A] text-[#975A16] text-[11px] font-medium">
+                                  <span>{uploadErrorMessage}</span>
+                                </div>
+                              )}
+                              <p className="text-[10px] text-[#8A7E6D] mt-1.5 leading-relaxed">
+                                Photos are preserved in tack-sharp <span className="font-semibold text-[#8C6B28]">Studio Ultra-HD (2.5K Retina)</span> directly into your private Google Drive <span className="font-semibold text-[#1A1A1A]">"Shree Ram Events Gallery"</span> folder. Zero pixelation, 100% royal wedding fidelity.
+                              </p>
                             </div>
 
                             {/* Quick Presets Picker with Verified Real Photos */}
