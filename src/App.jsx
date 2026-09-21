@@ -52,15 +52,19 @@ export default function App() {
       if (saved) {
         const parsed = JSON.parse(saved);
         if (Array.isArray(parsed) && parsed.length > 0) {
-          // Check if saved data contains old stale categories or photography
+          // Check if saved data contains old stale categories or removed cards
           const hasOldStaleData = parsed.some(
             (s) =>
               s.id === 'cinematic' ||
               s.id === 'catering' ||
               s.id === 'weddings' ||
-              (s.title && s.title.toLowerCase().includes('photography'))
+              (s.title && s.title.toLowerCase().includes('photography')) ||
+              (s.title && s.title.toLowerCase().includes('every sacred detail')) ||
+              (s.title && s.title.toLowerCase().includes('cinematic narrative'))
           );
-          if (!hasOldStaleData) return parsed;
+          const hasCorporateAndHouse = parsed.some(s => s.subtitle === 'Corporate Galas' || s.title?.includes('Corporate')) &&
+                                       parsed.some(s => s.subtitle === 'Housewarming Party' || s.title?.includes('Sacred Abode'));
+          if (!hasOldStaleData && hasCorporateAndHouse) return parsed;
         }
       }
       return BANNER_SERVICES;
@@ -163,14 +167,18 @@ export default function App() {
 
         const offeringsData = data.offerings || data.services;
         if (Array.isArray(offeringsData) && offeringsData.length > 1) {
-          const remoteOff = offeringsData.slice(1).map((row) => ({
-            id: row[0],
-            number: row[1],
-            title: row[2],
-            subtitle: row[3],
-            image: row[4],
-            description: row[5]
-          })).filter((o) => o.id && o.title);
+          const remoteOff = offeringsData.slice(1).map((row) => {
+            const baseService = BANNER_SERVICES.find((b) => b.id === row[0] || b.number === row[1]) || {};
+            return {
+              ...baseService,
+              id: row[0],
+              number: row[1],
+              title: row[2],
+              subtitle: row[3],
+              image: row[4],
+              description: row[5]
+            };
+          }).filter((o) => o.id && o.title);
           if (remoteOff.length > 0) setServices(remoteOff);
         }
       } catch (err) {
