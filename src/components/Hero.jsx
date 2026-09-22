@@ -1,5 +1,5 @@
 import React from 'react';
-import { ArrowRight, MessageSquare, Calendar } from 'lucide-react';
+import { ArrowRight, Calendar } from 'lucide-react';
 import { BRAND_INFO } from '../data/initialData';
 
 export default function Hero({ onNavigateToReservation }) {
@@ -38,26 +38,28 @@ export default function Hero({ onNavigateToReservation }) {
           Marriage is a sacred covenant. We craft regal wedding celebrations with architectural royal mandaps, exquisite banquets, and 5-star royal catering.
         </p>
 
-        {/* Symmetrical CTA Buttons */}
-        <div className="flex flex-col sm:flex-row gap-3.5 items-center justify-center w-full sm:w-auto">
+        {/* Bespoke Silk Ivory & Gold Foil Royal CTA */}
+        <div className="flex flex-col items-center justify-center w-full">
           <button
             onClick={() => onNavigateToReservation && onNavigateToReservation()}
-            className="w-full sm:w-auto btn-pill-dark"
+            className="group px-7 sm:px-9 py-3 sm:py-3.5 rounded-full border border-[#C5A880] bg-[#FFFDF9]/95 hover:bg-[#FAF4E6] text-[#2C241B] text-xs uppercase tracking-[0.22em] font-medium inline-flex items-center justify-center gap-2.5 transition-all duration-300 shadow-[0_4px_20px_-4px_rgba(197,168,128,0.28)] hover:shadow-[0_8px_25px_-4px_rgba(197,168,128,0.45)] hover:scale-[1.01] cursor-pointer"
           >
-            <Calendar className="w-3.5 h-3.5 text-[#C5A880]" />
+            <Calendar className="w-3.5 h-3.5 text-[#A68352]" />
             <span>Check Auspicious Date</span>
-            <ArrowRight className="w-3.5 h-3.5 text-[#C5A880]" />
+            <ArrowRight className="w-3.5 h-3.5 text-[#A68352] transition-transform duration-300 group-hover:translate-x-1" />
           </button>
 
-          <a
-            href={`https://wa.me/${BRAND_INFO.contacts[0].whatsapp}?text=Hello%20Shree%20Ram%20Events,%20I%20would%20like%20to%20check%20our%20wedding%20date.`}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="w-full sm:w-auto btn-pill-outline bg-white/80"
-          >
-            <MessageSquare className="w-3.5 h-3.5 text-[#8C7355]" />
-            <span>DM "WEDDING" to Inquire</span>
-          </a>
+          {/* Subtle Direct Conversation Link */}
+          <div className="mt-3 sm:mt-3.5 flex items-center justify-center text-center">
+            <a
+              href={`https://wa.me/${BRAND_INFO.contacts[0].whatsapp}?text=Hello%20Shree%20Ram%20Events,%20I%20would%20like%20to%20check%20our%20wedding%20date.`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-[#8C7355] hover:text-[#2C241B] font-light text-[11px] sm:text-xs tracking-wide transition-colors underline-offset-4 hover:underline cursor-pointer"
+            >
+              Prefer a direct conversation?
+            </a>
+          </div>
         </div>
 
       </div>
